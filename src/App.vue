@@ -15,9 +15,6 @@
 import { EventBus } from './event-bus.js'
 import Login from '@/components/Login'
 
-// import VModal from 'vue-js-modal'
-// import Login from '@/components/Login'
-// var modal = null
 export default {
   name: 'app',
   ready: true,
