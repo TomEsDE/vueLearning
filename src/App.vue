@@ -48,8 +48,7 @@ document.addEventListener('keyup', (event) => {
 
   var directionKeys = ['8', '9', '6', '3', '2', '1', '4', '7']
 
-  // As the user release the Ctrl key, the key is no longer active.
-  // So event.ctrlKey is false.
+  // if one of the direction keys are pressed, send a message via the event-bus
   if (directionKeys.find(d => keyName === d)) {
     console.log('keyName: ' + keyName)
     EventBus.$emit('kompass-key-event', keyName)
