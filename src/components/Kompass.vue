@@ -1,8 +1,8 @@
 <template>
   <div>
-	  <mynav ref="nav" :showTwitch="false"/>
+	  <mynav ref="nav" :showTwitch="true"/>
 
-    <button v-on:click="setTimeout(moveNeedle(Math.ceil(Math.random() * 360)),0)"><h3>{{ buttonNeedleText }}</h3></button>
+    <button class="btn btn-lg btn-danger btn-block" v-on:click="setTimeout(moveNeedle(Math.ceil(Math.random() * 360)),0)"><h3>{{ buttonNeedleText }}</h3></button>
     <br />
 
     <svg width="40%" height="40%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
@@ -121,6 +121,7 @@
 <script>
 import mynav from './mynav.vue'
 import { EventBus } from '../event-bus.js'
+import helper from '../helpers.js'
 
 var message = 'Kompass'
 export default {
@@ -153,24 +154,39 @@ export default {
       var distance = Math.abs(from - to)
       var sleepPerDegree = Math.ceil(distance !== 0 ? speed / distance : 50)
 
-      var distanceRange = this.$helpers.getCustomListRange(from, to)
+      var distanceRange = helper.getCustomListRange(from, to)
 
-      console.log('from: ' + from + ' - to: ' + to)
+      // console.log('from: ' + from + ' - to: ' + to)
       console.log('distanceRange >>> from: ' + distanceRange[0] + ' - to: ' + distanceRange[distanceRange.length - 1])
       console.log('distance: ' + distance)
       console.log('sleepPerDegree: ' + sleepPerDegree)
 
-      var counter = 0
-      var position = distanceRange[counter]
+      let counter = 0
+
+      function* pos () {
+        while (counter < distanceRange.length - 1) {
+          yield distanceRange[counter++]
+        }
+
+        clearInterval(interval)
+        console.log('toAngle: ' + toAngle)
+        yield toAngle
+        // document.getElementById('needle').setAttribute('transform', 'rotate(' + toAngle + ',200,200)')
+      }
+
+      let posGen = pos()
+
       var interval = setInterval(function () {
-        position = distanceRange[counter++]
+        // position = distanceRange[counter++]
         // console.log('position: ' + position)
-        document.getElementById('needle').setAttribute('transform', 'rotate(' + position + ',200,200)')
-        document.getElementById('needle').setAttribute('angle', String.valueOf(position))
-        if (counter === distanceRange.length) {
+        let nextPos = posGen.next().value
+        // console.log('nextPos: ' + nextPos)
+        if (nextPos === undefined) {
           clearInterval(interval)
-          console.log('toAngle: ' + toAngle)
           document.getElementById('needle').setAttribute('transform', 'rotate(' + toAngle + ',200,200)')
+        } else {
+          document.getElementById('needle').setAttribute('transform', 'rotate(' + nextPos + ',200,200)')
+          document.getElementById('needle').setAttribute('angle', String.valueOf(nextPos))
         }
       }, sleepPerDegree)
 
@@ -202,21 +218,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-h1, h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #35495E;
-}
 </style>

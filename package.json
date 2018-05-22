@@ -12,7 +12,15 @@
     "stop": "pkill --signal SIGINT my-vue-app"
   },
   "dependencies": {
+    "animate.css": "^3.6.1",
     "axios": "^0.18.0",
+    "bootstrap": "^4.1.1",
+    "chart.js": "^2.7.2",
+    "jquery": "^3.3.1",
+    "js-cookie": "^2.2.0",
+    "perfect-scrollbar": "^1.3.0",
+    "popper.js": "^1.14.3",
+    "typy": "^2.0.1",
     "vue": "^2.5.2",
     "vue-js-modal": "^1.3.13",
     "vue-router": "^3.0.1",

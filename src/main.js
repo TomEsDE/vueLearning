@@ -7,12 +7,13 @@ import store from './store'
 import axios from 'axios'
 import VModal from 'vue-js-modal'
 import helpers from './helpers'
+import 'bootstrap'
 
 Vue.config.productionTip = false
 Vue.use(VModal)
 
 axios.defaults.headers.common['Authorization'] = 'Bearer token-301739.38487642474'
-axios.defaults.baseURL = '//ubuntu:8080/dummy-test/useraccount'
+axios.defaults.baseURL = 'api/useraccount'
 
 const plugin = {
   install () {

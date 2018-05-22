@@ -26,8 +26,9 @@ export default {
         { url: '/', desc: 'Hello' },
         { url: '/twitch', desc: 'Twitch' },
         { url: '/ciao', desc: 'Ciao' },
-        { url: '/login', desc: 'Login' },
-        { url: '/compass', desc: 'Kompass' }
+        // { url: '/login', desc: 'Login' },
+        { url: '/compass', desc: 'Kompass' },
+        { url: '/test', desc: 'Test' }
       ]
     }
   },
@@ -66,20 +67,22 @@ ol ol {
     display: block;
     padding: .4em .4em .4em 2em;
     *padding: .4em;
-    margin: .5em 0;
+    margin: .5em 1em;
     background: #ddd;
     color: #444;
     text-decoration: none;
     border-radius: .3em;
-    transition: all .3s ease-out;   
+    transition: all .3s ease-out;
+    box-sizing: content-box;
 }
 
 .rounded-list a:hover{
-    background: #eee;
+    background: #baf3b5;
 }
 
 .rounded-list a:hover:before{
-    transform: rotate(360deg);  
+    /*transform: rotate(360deg);*/
+    transform: scale(1.2);
 }
 
 .rounded-list a:before{
@@ -98,5 +101,11 @@ ol ol {
     font-weight: bold;
     border-radius: 2em;
     transition: all .3s ease-out;
+    box-sizing: inherit;
+}
+
+nav ol li {
+  display: inline-block;
+  margin: 0 10px;
 }
 </style>

@@ -4,9 +4,19 @@
       <span>Vue.js PWA - My first Vue Application</span>
     </header>
     <main>
+
+      <transition-group class="errors" name="list" tag="p">
+        <div v-for="error in errors" :class='getGlobalMessageClass(error)' :key="error.id">
+          <span v-text="error.msg" />
+          <button type="button" class="close" aria-label="Close" v-on:click="removeError(error.id)">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </transition-group>
+
       <!--<img src="./assets/logo.png" alt="Vue.js PWA">-->
       <router-view></router-view>
-      <Login />
+      <Login ref="login" v-on:onLogin="onLogin($event)" />
     </main>
   </div>
 </template>
@@ -14,31 +24,106 @@
 <script>
 import { EventBus } from './event-bus.js'
 import Login from '@/components/Login'
+import $ from 'jquery'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'animate.css/animate.min.css'
 
 export default {
   name: 'app',
   ready: true,
   data: function () {
     return {
-      soso: true
+      errorCount: 0,
+      errors: []
     }
+  },
+  computed: {
+    // a computed getter
   },
   components: { Login },
   methods: {
-    show () {
-      this.$modal.show('login')
+    getGlobalMessageClass: function (error) {
+      // `this` points to the vm instance
+      if (error.type) {
+        switch (error.type) {
+          case 'error': return 'alert alert-danger'
+          case 'info': return 'alert alert-warning'
+          case 'success': return 'alert alert-success'
+          default: return 'alert alert-info'
+        }
+      } else {
+        return 'alert alert-info'
+      }
     },
-    hide () {
-      this.$modal.hide('login')
+    show: function () {
+      // this.$modal.show('login')
+      // $('#loginModal').modal('show')
+      $('#loginModal').modal({backdrop: 'static', keyboard: false})
+    },
+    hide: function () {
+      // this.$modal.hide('login')
+      $('#loginModal').modal('hide')
+    },
+    onLogin: function () {
+      this.hide()
+      this.addError({ msg: 'Login erfolgreich', type: 'success' })
+    },
+    addError: function (error) {
+      error['id'] = this.errorCount++
+      this.errors.push(error)
+
+      if (!error.sticky) {
+        setTimeout(() => {
+          this.removeError(error.id)
+        }, 5000)
+      }
+    },
+    removeError: function (id) {
+      this.errors.some((error, index) => {
+        if (error.id === id) {
+          this.errors.splice(index, 1)
+          return true
+        }
+      })
     }
   },
   mounted () {
+    // this.addError({ msg: 'test-error-message 1 adf asdf asdfasdlfklfjslfjalsdfj aksj följ asöldfj ölasj dfljalsöd fj', type: 'error' })
+    // this.addError({ msg: 'test-info-message 2', type: 'info', sticky: true })
+    // this.addError({ msg: 'test-error-message 3', type: 'error' })
+    // this.addError({ msg: 'test-success-message 20', type: 'success', sticky: true })
     // this.show()
 
     // Listen to the event.
     EventBus.$on('sending-login-event', msg => {
       console.log('event-msg: ' + msg)
       this.show()
+      this.addError({ msg: 'Login erforderlich', type: 'info' })
+    })
+
+    // bootstrap modal listener
+    $('#loginModal').on('hide.bs.modal', function (e) {
+      console.log('#loginModal getting closed')
+      EventBus.$emit('login-hide')
+      // check login, if false -> prevent from hiding
+      var login = true
+      if (!login) {
+        e.preventDefault()
+      }
+    })
+
+    // bootstrap modal listener
+    $('#loginModal').on('shown.bs.modal', function (e) {
+      // this.$refs.login.liveValidation = true
+      $('#inputEmail').focus()
+      EventBus.$emit('login-shown')
+    })
+
+    // Listen to the event.
+    EventBus.$on('global-error', error => {
+      this.addError(error)
+      // error['id'] = this.errorCount++
+      // this.errors.push(error)
     })
   }
 }
@@ -56,9 +141,56 @@ document.addEventListener('keyup', (event) => {
 }, false)
 </script>
 
+<style scoped>
+.errors {
+  position: fixed;
+  bottom: 0;
+  /* margin-top: 30px; */
+  width: 80%;
+  z-index: 100;
+  left: calc(50% - 40%);
+  opacity: 0.9;
+}
+.errors div {
+  margin-bottom: 0.5rem
+}
+.list-enter-active, .list-leave-active {
+  transition: all 0.8s;
+}
+.list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  /* animation: hideme 0.5s forwards; */
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+@keyframes hideme {
+  100% {
+    opacity: 0;
+    height: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+}
+</style>
+
 <style>
+:root {
+  --input-padding-x: .75rem;
+  --input-padding-y: .75rem;
+}
+
 body {
   margin: 0;
+  /*
+	background: url(http://i.imgur.com/GHr12sH.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    */
 }
 
 #app {

@@ -6,6 +6,8 @@ import Ciao from '@/components/Ciao'
 import Twitch from '@/components/Twitch'
 import oauth from '@/components/oauth'
 import Kompass from '@/components/Kompass'
+import User from '@/components/User'
+import Test from '@/components/Test'
 import { EventBus } from '../event-bus.js'
 
 Vue.use(Router)
@@ -41,6 +43,16 @@ var router = new Router({
       path: '/compass',
       name: 'compass',
       component: Kompass
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: User
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test
     }
   ]
 })
