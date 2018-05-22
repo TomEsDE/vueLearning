@@ -1,7 +1,11 @@
 <template>
   <div id="app">
     <header>
-      <span>Vue.js PWA - My first Vue Application</span>
+      <span style="float: left">Vue.js PWA - My first Vue Application</span>
+      <div v-if="$refs.login && $refs.login.user.id" class="header-user">
+        <span style="font-size:12px">Name: </span><span class="header-user-text" v-text="$refs.login.user.username" />
+          <span v-if="$refs.login.user.account" style="font-size:12px"> - Balance: <span class="header-user-text" v-text="$refs.login.user.account.balance" /></span>
+      </div>
     </header>
     <main>
 
@@ -103,19 +107,18 @@ export default {
 
     // bootstrap modal listener
     $('#loginModal').on('hide.bs.modal', function (e) {
-      console.log('#loginModal getting closed')
-      EventBus.$emit('login-hide')
-      // check login, if false -> prevent from hiding
-      var login = true
-      if (!login) {
-        e.preventDefault()
-      }
+      // console.log('#loginModal getting closed')
+      // EventBus.$emit('login-hide')
+      // // check login, if false -> prevent from hiding
+      // var login = true
+      // if (!login) {
+      //   e.preventDefault()
+      // }
     })
 
     // bootstrap modal listener
     $('#loginModal').on('shown.bs.modal', function (e) {
       // this.$refs.login.liveValidation = true
-      $('#inputEmail').focus()
       EventBus.$emit('login-shown')
     })
 
@@ -214,7 +217,7 @@ header {
 }
 
 header span {
-  display: block;
+  /* display: block; */
   position: relative;
   font-size: 20px;
   line-height: 1;
@@ -222,5 +225,17 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
+}
+
+.header-user {
+  float: right;
+  padding-top: 16px;
+}
+.header-user { 
+  font-size: 12px;
+}
+
+.header-user-text {
+  font-size: 20px;
 }
 </style>

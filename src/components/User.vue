@@ -19,6 +19,9 @@
                 <div class="col-md-12">
                   <section class="login-form">
                     <form v-on:submit.prevent="onSubmit" class="form-signin" method="post" action="#" role="login" novalidate>
+                    <button type="button" class="close" aria-label="Close" v-on:click="hide()">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
                       <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
                       
                       <div class="form-label-group">
@@ -72,7 +75,7 @@
                       <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       -->
-                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Save User</button>
+                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block" v-text="buttonDescription()" />
                       
                     </form>
                     
@@ -112,8 +115,11 @@ export default {
       default: true
     }
   },
+  computed: {
+  },
   data () {
     return {
+      isCreate: true,
       msg: message,
       liveValidation: true,
       defaultErrorText: 'Bitte geben Sie Daten ein',
@@ -123,6 +129,7 @@ export default {
         email: null,
         password: null,
         account: {
+          userId: null,
           balance: 0
         }
       },
@@ -151,6 +158,11 @@ export default {
   },
   components: { },
   methods: {
+    // a computed getter
+    buttonDescription: function () {
+      // `this` points to the vm instance
+      return this.isCreate ? 'Create User' : 'Save User'
+    },
     saveUser: function () {
       this.user.email = this.inputEmail
       this.user.username = this.inputUsername
@@ -158,7 +170,7 @@ export default {
       this.user.account.balance = this.inputBalance
 
       let token = jscookie.get('jwt')
-      let api = this.create ? 'create' : 'save'
+      let api = this.isCreate ? 'create' : 'save'
       axios.post(api, this.user, {
         headers: {
           Authorization: 'Bearer ' + token
@@ -166,6 +178,10 @@ export default {
         }
       }).then(resp => {
         console.log('resp.data: ' + resp.data)
+        this.user = resp.data
+        this.create = false
+        this.isCreate = false
+        EventBus.$emit('global-error', { msg: 'Speichern erfolgreich', type: 'success', sticky: false })
       }).catch(e => {
         // this.errors.push(e)
         console.log('error: ' + e)
@@ -205,24 +221,29 @@ export default {
       // this.liveValidation = false
     },
     getUser: function () {
+      $('#btnSubmit').prop('disabled', true)
       let token = jscookie.get('jwt')
       console.log('jwt cookie: ' + token)
-      axios.get('get/' + this.userId, {
+      axios.get('get/' + this.user.id, {
         headers: {
           Authorization: 'Bearer ' + token
           // 'test': 'test-1'
         }
       }).then(resp => {
-        this.users = resp.data
+        this.user = resp.data
 
-        this.inputEmail = this.users.email
-        this.inputUsername = this.users.username
-        this.inputPassword = this.users.password
-        this.inputPasswordConfirm = this.users.password
-        this.inputBalance = this.users.account.balance
+        this.inputEmail = this.user.email
+        this.inputUsername = this.user.username
+        this.inputPassword = this.user.password
+        this.inputPasswordConfirm = this.user.password
+        this.inputBalance = this.user.account.balance
+
+        $('#btnSubmit').prop('disabled', false)
       }).catch(e => {
+        $('#btnSubmit').prop('disabled', true)
         var msg = e.message
         if (e.response.status === 401) {
+          this.hide()
           EventBus.$emit('sending-login-event', 'show modal login dialog')
           msg = 'Login erforderlich'
         } else {
@@ -268,9 +289,9 @@ export default {
             errorText = 'Die Passwörter stimmen nicht überein'
           }
         } else if (input === 'inputUsername') {
-          if (this.$data[input].length < 5) {
+          if (this.$data[input].length < 4) {
             error = true
-            errorText = 'Der Username muss mind. 5 Zeichen lang sein'
+            errorText = 'Der Username muss mind. 4 Zeichen lang sein'
           }
         } else if (input === 'inputBalance') {
           console.log('balance: ' + this.inputBalance)
@@ -306,7 +327,7 @@ export default {
     show: function () {
       // this.$modal.show('login')
       // $('#loginModal').modal('show')
-      $('#userModal').modal({backdrop: 'static', keyboard: false})
+      $('#userModal').modal('show')
     },
     hide: function () {
       // this.$modal.hide('login')
@@ -331,17 +352,23 @@ export default {
       this.inputPasswordErrorText = ''
       this.inputPasswordConfirmErrorText = ''
       this.inputBalanceErrorText = ''
+
+      this.user = {
+        id: null,
+        username: null,
+        email: null,
+        password: null,
+        account: {
+          userId: null,
+          balance: 0
+        }
+      }
       // this.liveValidation = false
       this.errors.clear()
     }
   },
   mounted () {
-    if (this.create) {
-      this.clear()
-    } else {
-      this.getUser()
-    }
-
+    console.log('User Component mounted!')
     $('#inputEmail').focus()
 
     // bootstrap modal listener
@@ -358,7 +385,12 @@ export default {
 
     // EventBus.$emit('sending-login-event', 'show modal login dialog')
     EventBus.$on('user-shown', msg => {
-      this.getUser()
+      // if (this.create) {
+      if (this.isCreate) {
+        this.clear()
+      } else {
+        this.getUser()
+      }
       $('#inputEmail').focus()
     })
     EventBus.$on('user-hide', msg => {
@@ -373,7 +405,11 @@ export default {
 /*
 over-ride "Weak" message, show font in dark grey
 */
-
+.close {
+  position: absolute;
+  right: 10%;
+  top: 10%;
+}
 .progress-bar {
     color: #333;
 } 

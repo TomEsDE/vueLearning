@@ -22,23 +22,23 @@
                       <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
                       
                       <div class="form-label-group">
-                        <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true)" :class="'form-control ' + (inputEmailError ? 'red' : '')" placeholder="Email address" required autofocus>
-                        <label for="inputEmail">Email address</label>
+                        <input type="email" v-model="inputLoginEmail" id="inputLoginEmail" v-on:blur="validate('inputLoginEmail', true)" :class="'form-control ' + (inputLoginEmailError ? 'red' : '')" placeholder="Email address" required autofocus>
+                        <label for="inputLoginEmail">Email address</label>
                         
                         <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
                           <!--
-                          <div v-if="isError('inputEmail')" class='form-error alert alert-danger' v-text="emailErrorText"></div>
+                          <div v-if="isError('inputLoginEmail')" class='form-error alert alert-danger' v-text="emailErrorText"></div>
                           -->
-                          <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
+                          <div v-if="liveValidation && inputLoginEmailErrorText" class='form-error alert alert-danger' v-text="inputLoginEmailErrorText"></div>
                         </transition>
                       </div>
                       
                       <div class="form-label-group">
-                        <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true)" :class="'form-control ' + (inputPasswordError ? 'red' : '')" placeholder="Password" required>
-                        <label for="inputPassword">Password</label>
+                        <input type="password" v-model="inputLoginPassword" id="inputLoginPassword" v-on:blur="validate('inputLoginPassword', true)" :class="'form-control ' + (inputLoginPasswordError ? 'red' : '')" placeholder="Password" required>
+                        <label for="inputLoginPassword">Password</label>
 
                         <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
-                          <div v-if="liveValidation && inputPasswordErrorText" class='form-error alert alert-danger' v-text="inputPasswordErrorText"></div>
+                          <div v-if="liveValidation && inputLoginPasswordErrorText" class='form-error alert alert-danger' v-text="inputLoginPasswordErrorText"></div>
                         </transition>
                       </div>
                       
@@ -48,7 +48,7 @@
                       <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       -->
-                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
+                      <button v-on:submit.prevent="onSubmit" id="btnLoginSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       <div>
                         <a href="#">Create account</a> or <a href="#">reset password</a>
                       </div>
@@ -88,14 +88,17 @@ export default {
         id: null,
         username: null,
         email: null,
-        password: null
+        password: null,
+        account: {
+          balance: 0
+        }
       },
-      inputEmail: '',
-      inputEmailError: false,
-      inputEmailErrorText: this.defaultErrorText,
-      inputPassword: '',
-      inputPasswordError: false,
-      inputPasswordErrorText: this.defaultErrorText,
+      inputLoginEmail: '',
+      inputLoginEmailError: false,
+      inputLoginEmailErrorText: this.defaultErrorText,
+      inputLoginPassword: '',
+      inputLoginPasswordError: false,
+      inputLoginPasswordErrorText: this.defaultErrorText,
       error: {
         inputId: '',
         errorText: '',
@@ -107,11 +110,13 @@ export default {
   components: { },
   methods: {
     login: function () {
-      this.user.username = this.inputEmail
-      this.user.password = this.inputPassword
+      this.user.username = this.inputLoginEmail
+      this.user.password = this.inputLoginPassword
       axios.post('authUser', this.user).then(resp => {
-        var token = resp.data
+        var token = resp.data['token']
+        this.user = resp.data['user']
         console.log('token >>> ' + token)
+        console.log('login user >>> ' + this.user)
         jscookie.set('jwt', token)
         // parent Bescheid geben
         this.$emit('onLogin')
@@ -119,19 +124,19 @@ export default {
         // this.errors.push(e)
         console.log('error: ' + e)
 
-        this.inputEmailError = true
-        this.inputEmailErrorText = 'Bitte überüfen Sie Ihre Eingabe'
-        this.inputPasswordError = true
-        // this.inputPasswordErrorText = 'Eingabe unkorrekt'
+        this.inputLoginEmailError = true
+        this.inputLoginEmailErrorText = 'Bitte überüfen Sie Ihre Eingabe'
+        this.inputLoginPasswordError = true
+        // this.inputLoginPasswordErrorText = 'Eingabe unkorrekt'
         EventBus.$emit('global-error', { msg: 'Login fehlgeschlagen', type: 'error', sticky: false })
 
-        $('#inputEmail').focus()
+        $('#inputLoginEmail').focus()
       })
       return false
     },
     onSubmit: function () {
       console.log('form submitted')
-      let inputs = ['inputEmail', 'inputPassword']
+      let inputs = ['inputLoginEmail', 'inputLoginPassword']
 
       let errInput = null
       inputs.forEach(input => {
@@ -146,11 +151,11 @@ export default {
         $('#' + errInput).focus()
       } else {
         // focus aus den inputs nehmen, sonst gibt es unschöne onblur-Effekte
-        $('#btnSubmit').focus()
+        $('#btnLoginSubmit').focus()
         this.login()
       }
-      // this.validate('inputEmail')
-      // this.validate('inputPassword')
+      // this.validate('inputLoginEmail')
+      // this.validate('inputLoginPassword')
       // this.liveValidation = false
     },
     isError: function (input) {
@@ -180,7 +185,7 @@ export default {
       let error = this.liveValidation && this.$data[input] === ''
       let errorText = error ? this.defaultErrorText : ''
 
-      if (!error && input === 'inputPassword' && this.$data[input].length < 3) {
+      if (!error && input === 'inputLoginPassword' && this.$data[input].length < 3) {
         error = true
         errorText = 'Das Passwort muss mind. 3 Zeichen lang sein'
       }
@@ -207,31 +212,43 @@ export default {
         setTimeout(resolve.bind(null, v), t)
       })
     },
-    close: function () {
+    clear: function () {
       for (var key of this.errors.keys()) {
         clearTimeout(this.errors.get(key).timoutThread)
       }
-      this.inputEmail = ''
-      this.inputPassword = ''
-      this.inputEmailError = false
-      this.inputPasswordError = false
-      this.inputEmailErrorText = ''
-      this.inputPasswordErrorText = ''
+      this.inputLoginEmail = ''
+      this.inputLoginPassword = ''
+      this.inputLoginEmailError = false
+      this.inputLoginPasswordError = false
+      this.inputLoginEmailErrorText = ''
+      this.inputLoginPasswordErrorText = ''
       // this.liveValidation = false
+
+      this.user = {
+        id: null,
+        username: null,
+        email: null,
+        password: null,
+        account: {
+          balance: 0
+        }
+      }
       this.errors.clear()
     }
   },
   mounted () {
     // EventBus.$emit('sending-login-event', 'show modal login dialog')
     EventBus.$on('login-shown', msg => {
+      this.clear()
+      $('#inputLoginEmail').focus()
       // this.$refs.login.liveValidation = false
       setTimeout(() => {
         this.liveValidation = true
-      }, 1500)
+      }, 1000)
     })
     EventBus.$on('login-hide', msg => {
       // this.$refs.login.liveValidation = false
-      this.close()
+      // this.close()
     })
   }
 }
