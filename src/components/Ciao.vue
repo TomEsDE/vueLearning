@@ -17,6 +17,7 @@ import mynav from './mynav.vue'
 import user from './User.vue'
 import { EventBus } from '../event-bus.js'
 import jscookie from 'js-cookie'
+// import $ from 'jquery'
 
 var message = 'Ciao du Dödeli'
 export default {
@@ -24,7 +25,7 @@ export default {
     return {
       msg: message,
       createNewUser: false,
-      userId: 19
+      userId: 11
     }
   },
   components: { mynav, user },
@@ -41,10 +42,13 @@ export default {
     },
     createUser () {
       this.createNewUser = true
+      this.$refs.userDlg.isCreate = true
       this.show()
     },
     editUser () {
       this.createNewUser = false
+      this.$refs.userDlg.isCreate = false
+      this.$refs.userDlg.user.id = this.userId
       this.show()
     },
     show () {
