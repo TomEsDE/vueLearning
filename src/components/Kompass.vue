@@ -2,7 +2,7 @@
   <div>
 	  <mynav ref="nav" :showTwitch="true"/>
 
-    <button class="btn btn-lg btn-danger btn-block" v-on:click="setTimeout(moveNeedle(Math.ceil(Math.random() * 360)),0)"><h3>{{ buttonNeedleText }}</h3></button>
+    <button class="btn btn-lg btn-danger btn-block" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))"><h3>{{ buttonNeedleText }}</h3></button>
     <br />
 
     <svg width="40%" height="40%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
@@ -122,6 +122,7 @@
 import mynav from './mynav.vue'
 import { EventBus } from '../event-bus.js'
 import helper from '../helpers.js'
+import user from './User.vue'
 
 var message = 'Kompass'
 export default {
@@ -129,10 +130,11 @@ export default {
     return {
       sharedItems: mynav.data,
       msg: message,
-      buttonNeedleText: 'Kompass ausrichten'
+      buttonNeedleText: 'Kompass ausrichten',
+      animationStopFlag: 0
     }
   },
-  components: { mynav },
+  components: { mynav, user },
   methods: {
     // access child data!
     moveNeedle (toAngle) {
@@ -175,9 +177,12 @@ export default {
       }
 
       let posGen = pos()
+      let hash = ++this.animationStopFlag
+      console.log('animationStopFlag >>> ' + this.animationStopFlag)
 
-      var interval = setInterval(function () {
-        // position = distanceRange[counter++]
+      var interval = setInterval(() => {
+        // check stop flag
+        if (hash !== this.animationStopFlag) clearInterval(interval)
         // console.log('position: ' + position)
         let nextPos = posGen.next().value
         // console.log('nextPos: ' + nextPos)

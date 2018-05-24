@@ -22,6 +22,7 @@
                     <button type="button" class="close" aria-label="Close" v-on:click="hide()">
                       <span aria-hidden="true">&times;</span>
                     </button>
+                      <span class="user-id">ID: <span v-text="user.id" /></span>
                       <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
                       
                       <div class="form-label-group">
@@ -75,16 +76,14 @@
                       <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
                       -->
-                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block" v-text="buttonDescription()" />
+                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">
+                        <font-awesome-icon icon="save" size="lg" />
+                        <span v-text="buttonDescription()" />
+                      </button>
                       
                     </form>
-                    
-                    <div class="form-links">
-                      <a href="#">www.website.com</a>
-                    </div>
                   </section>  
-                </div>
-                     
+                </div>                     
 
               </div>
             </div>
@@ -100,6 +99,7 @@ import { EventBus } from '../event-bus.js'
 import $ from 'jquery'
 import axios from 'axios'
 import jscookie from 'js-cookie'
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 
 var message = 'Login'
 export default {
@@ -156,7 +156,7 @@ export default {
       errors: new Map()
     }
   },
-  components: { },
+  components: { FontAwesomeIcon },
   methods: {
     // a computed getter
     buttonDescription: function () {
@@ -184,13 +184,8 @@ export default {
         EventBus.$emit('global-error', { msg: 'Speichern erfolgreich', type: 'success', sticky: false })
       }).catch(e => {
         // this.errors.push(e)
-        console.log('error: ' + e)
-
-        // this.inputEmailError = true
-        // this.inputEmailErrorText = 'Bitte überüfen Sie Ihre Eingabe'
-        // this.inputPasswordError = true
-        // this.inputPasswordErrorText = 'Eingabe unkorrekt'
-        EventBus.$emit('global-error', { msg: 'Speichern fehlgeschlagen', type: 'error', sticky: true })
+        this.$helpers.checkAxiosException(e, () => this.hide(), 'Speichern fehlgeschlagen')
+        // EventBus.$emit('global-error', { msg: 'Speichern fehlgeschlagen', type: 'error', sticky: true })
 
         $('#inputEmail').focus()
       })
@@ -241,14 +236,8 @@ export default {
         $('#btnSubmit').prop('disabled', false)
       }).catch(e => {
         $('#btnSubmit').prop('disabled', true)
-        var msg = e.message
-        if (e.response.status === 401) {
-          this.hide()
-          EventBus.$emit('sending-login-event', 'show modal login dialog')
-          msg = 'Login erforderlich'
-        } else {
-          EventBus.$emit('global-error', { msg: msg, type: 'error', sticky: true })
-        }
+
+        this.$helpers.checkAxiosException(e, () => this.hide())
       })
     },
     isError: function (input) {
@@ -278,7 +267,6 @@ export default {
       // Validations...
       let error = this.liveValidation && required && this.$data[input] === ''
       let errorText = error ? this.defaultErrorText : ''
-
       if (!error) {
         if (input === 'inputPassword') {
           if (this.$data[input].length < 3) {
@@ -292,6 +280,14 @@ export default {
           if (this.$data[input].length < 4) {
             error = true
             errorText = 'Der Username muss mind. 4 Zeichen lang sein'
+          }
+        } else if (input === 'inputEmail') {
+          // https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+          var re = /^[^\s@]+@[^\s@]+\.+(?:[a-z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b/
+          // re = [a-z0-9!#$%&\x39*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&x39*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b
+          if (!re.test(String(this.$data[input]).toLowerCase())) {
+            error = true
+            errorText = 'Bitte geben Sie eine gültige Email Adresse ein'
           }
         } else if (input === 'inputBalance') {
           console.log('balance: ' + this.inputBalance)
@@ -372,30 +368,42 @@ export default {
     $('#inputEmail').focus()
 
     // bootstrap modal listener
-    $('#userModal').on('hide.bs.modal', function (e) {
+    $('#userModal').on('hide.bs.modal', e => {
       // console.log('#userModal getting closed')
-      EventBus.$emit('user-hide')
+      // EventBus.$emit('user-hide')
+      this.clear()
     })
 
     // bootstrap modal listener
-    $('#userModal').on('shown.bs.modal', function (e) {
-      console.log('#userModal shown')
-      EventBus.$emit('user-shown')
-    })
-
-    // EventBus.$emit('sending-login-event', 'show modal login dialog')
-    EventBus.$on('user-shown', msg => {
-      // if (this.create) {
+    $('#userModal').on('shown.bs.modal', e => {
+      console.log('#userModal shown >>> ' + this.isCreate)
+      // EventBus.$emit('user-shown')
       if (this.isCreate) {
         this.clear()
+        $('#btnSubmit').prop('disabled', false)
       } else {
         this.getUser()
       }
       $('#inputEmail').focus()
     })
+    /*
+    // EventBus.$emit('sending-login-event', 'show modal login dialog')
+    EventBus.$off('user-shown') // um 'multiple' Listener-Anmeldungen zu vermeiden
+    EventBus.$on('user-shown', msg => {
+      console.log('EventBus #userModal shown')
+      // if (this.create) {
+      // if (this.isCreate) {
+      //   this.clear()
+      // } else {
+      //   this.getUser()
+      // }
+      // $('#inputEmail').focus()
+    })
+    EventBus.$off('user-hide') // um 'multiple' Listener-Anmeldungen zu vermeiden
     EventBus.$on('user-hide', msg => {
       this.clear()
     })
+    */
   }
 }
 </script>
@@ -409,6 +417,11 @@ over-ride "Weak" message, show font in dark grey
   position: absolute;
   right: 10%;
   top: 10%;
+}
+.user-id {
+  position: absolute;
+  left: 10%;
+  top: 15%;
 }
 .progress-bar {
     color: #333;
@@ -485,7 +498,7 @@ form[role=login] > div {
 
 .form-label-group {
   position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-label-group > input,
@@ -514,12 +527,13 @@ form[role=login] > div {
 }
 .form-error {
   position: absolute;
-  top: 45px;
-  left: -10px;
+  top: 54px;
+  left: -15px;
   display: block;
-  padding: 0 0;
+  padding: 2px;
   z-index: 1;
   border-style: dotted;
+  border-color: rgb(223, 124, 124)
 }
 .form-error:before {  
   content: ' ';  
@@ -528,8 +542,8 @@ form[role=login] > div {
   height: 0;  
   left: 30px;  
   top: -10px;  
-  border: 5px solid;  
-  border-color: transparent #f5c6cb #f5c6cb transparent;  
+  border: 5px solid;
+  border-color:  transparent transparent rgb(223, 124, 124) transparent;  
 }
 
 .form-label-group input::-webkit-input-placeholder {

@@ -238,6 +238,7 @@ export default {
   },
   mounted () {
     // EventBus.$emit('sending-login-event', 'show modal login dialog')
+    EventBus.$off('login-shown') // um 'multiple' Listener-Anmeldungen zu vermeiden
     EventBus.$on('login-shown', msg => {
       this.clear()
       $('#inputLoginEmail').focus()
@@ -246,6 +247,7 @@ export default {
         this.liveValidation = true
       }, 1000)
     })
+    EventBus.$off('login-hide') // um 'multiple' Listener-Anmeldungen zu vermeiden
     EventBus.$on('login-hide', msg => {
       // this.$refs.login.liveValidation = false
       // this.close()

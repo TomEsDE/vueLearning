@@ -12,6 +12,10 @@
     "stop": "pkill --signal SIGINT my-vue-app"
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free-brands": "^5.0.13",
+    "@fortawesome/fontawesome-free-solid": "^5.0.13",
+    "@fortawesome/vue-fontawesome": "0.0.22",
     "animate.css": "^3.6.1",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",

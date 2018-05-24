@@ -4,7 +4,7 @@
       <span style="float: left">Vue.js PWA - My first Vue Application</span>
       <div v-if="$refs.login && $refs.login.user.id" class="header-user">
         <span style="font-size:12px">Name: </span><span class="header-user-text" v-text="$refs.login.user.username" />
-          <span v-if="$refs.login.user.account" style="font-size:12px"> - Balance: <span class="header-user-text" v-text="$refs.login.user.account.balance" /></span>
+          <span v-if="$refs.login.user.account" style="font-size:12px"> Balance: <span class="header-user-text" v-text="$refs.login.user.account.balance" /></span>
       </div>
     </header>
     <main>
@@ -99,6 +99,7 @@ export default {
     // this.show()
 
     // Listen to the event.
+    EventBus.$off('sending-login-event') // um 'multiple' Listener-Anmeldungen zu vermeiden
     EventBus.$on('sending-login-event', msg => {
       console.log('event-msg: ' + msg)
       this.show()
@@ -123,6 +124,7 @@ export default {
     })
 
     // Listen to the event.
+    EventBus.$off('global-error') // um 'multiple' Listener-Anmeldungen zu vermeiden
     EventBus.$on('global-error', error => {
       this.addError(error)
       // error['id'] = this.errorCount++
@@ -150,7 +152,7 @@ document.addEventListener('keyup', (event) => {
   bottom: 0;
   /* margin-top: 30px; */
   width: 80%;
-  z-index: 100;
+  z-index: 10000;
   left: calc(50% - 40%);
   opacity: 0.9;
 }

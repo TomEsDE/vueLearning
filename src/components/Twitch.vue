@@ -14,13 +14,29 @@
     <table class="table table-striped table-hover table-sm">
       <thead>
         <tr>
+          <th scope="col" :class="header[2].align">
+            <span class="header">#</span>
+          </th>
+          <th scope="col" :class="header[2].align">
+            <span class="header">action</span>
+          </th>
           <th scope="col" :class="h.align" v-for="(h, index) in header" v-bind:key="h.data" @click="sort(index)">
             <span class="header" v-text="h.desc" />
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user of usersPage" v-bind:key="user.id">          
+        <tr v-for="user of usersPage" v-bind:key="user.id">
+          <td :class="header[2].align" :data-title="header[2].desc">
+            <span v-text="user.id"></span>
+          </td>
+          <td :class="header[2].align" :data-title="header[2].desc">
+            <a class="edit" v-on:click.prevent="onEditUser(user.id)">
+              <font-awesome-icon icon="user-edit" size="lg" />
+            </a>
+            <!-- <font-awesome-icon icon="spinner" size="lg" pulse /> -->
+            <!-- <font-awesome-icon :icon="['far', 'spinner']" /> -->
+          </td>
           <td :class="header[0].align" :data-title="header[0].desc">
             <span v-text="user.username"></span>
           </td>
@@ -41,7 +57,7 @@
     <paging ref="paging" :dataSize="users.length" :page-size="pageSize" v-on:setPage="onSetPage($event)" />
     </div>
     
-    <div class="container invisible">
+    <!-- <div class="container invisible">
       <div class="method">
 
         <div class="row margin-0 list-header hidden-sm hidden-xs">
@@ -66,7 +82,7 @@
         </div>
 
       </div>
-    </div>
+    </div> -->
     
     <!--
     <ul v-if="posts && posts.length">
@@ -82,12 +98,14 @@
         {{error.message}}
       </li>
     </ul>
+    <user ref="userDlg" />
   </div>
 </template>
 
 <script>
 import { EventBus } from '../event-bus.js'
 import mynav from './mynav.vue'
+import user from './User.vue'
 import paging from './table-pagination.vue'
 import { mapState } from 'vuex'
 import axios from 'axios'
@@ -95,6 +113,7 @@ import $ from 'jquery'
 // import PerfectScrollbar from 'perfect-scrollbar'
 import t from 'typy'
 import jscookie from 'js-cookie'
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 
 export default {
   name: 'twitch',
@@ -110,11 +129,11 @@ export default {
         {desc: 'registriert seit', data: 'createTime', type: 'number', colsize: 5, align: 'text-left'}],
       users: [],
       usersPage: [],
-      pageSize: 10,
+      pageSize: 15,
       errors: []
     }
   },
-  components: { mynav, paging },
+  components: { mynav, paging, FontAwesomeIcon, user },
   computed: {
     ...mapState({
       // arrow functions can make the code very succinct!
@@ -140,6 +159,11 @@ export default {
         this.posts = resp.data
       }).catch(e => this.errors.push)
     },
+    onEditUser (userId) {
+      this.$refs.userDlg.isCreate = false
+      this.$refs.userDlg.user.id = userId
+      this.show()
+    },
     getuserAll: function (init) {
       let token = jscookie.get('jwt')
       console.log('jwt cookie: ' + token)
@@ -153,8 +177,8 @@ export default {
         var list = [...Array(10).keys()]
         var counter = 100
         list.forEach(i => {
-          Array.of(0, 1, 2).forEach(element => {
-            let userCopy = $.extend(true, {}, resp.data[element])
+          resp.data.forEach(element => {
+            let userCopy = $.extend(true, {}, element)
             userCopy.id = counter++
             // console.log('id: ' + userCopy.id)
             this.users.push(userCopy)
@@ -165,6 +189,7 @@ export default {
           this.onSetPage(0)
         }
       }).catch(e => {
+        console.log(e)
         var msg = e.message
         if (e.response.status === 401) {
           EventBus.$emit('sending-login-event', 'show modal login dialog')
@@ -214,6 +239,12 @@ export default {
         console.log(resp.data)
         window.location = resp.data
       }).catch(e => this.errors.push)
+    },
+    show () {
+      this.$refs.userDlg.show()
+    },
+    hide () {
+      this.$refs.userDlg.hide()
     }
   },
   created () {
@@ -238,6 +269,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.edit {
+  opacity: 0.5;
+}
+.edit:hover {
+  opacity: 1;
+  cursor: pointer;
+  animation: pulse 1.5s infinite;;
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(184, 153, 41, 0.4);
+    box-shadow: 0 0 0 0 rgba(184, 153, 41, 0.4);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 10px rgba(184, 153, 41, 0);
+      box-shadow: 0 0 0 10px rgba(184, 153, 41, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(184, 153, 41, 0);
+      box-shadow: 0 0 0 0 rgba(184, 153, 41, 0);
+  }
+}
+
 #container {
   position: relative;
   /*width: 900px;*/
