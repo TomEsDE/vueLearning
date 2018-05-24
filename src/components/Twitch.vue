@@ -302,7 +302,7 @@ export default {
 .table {
   text-align: left;
 }
-
+/*
 .grid-container {
   display: grid;
   grid-template-areas:
@@ -385,7 +385,6 @@ export default {
       padding-left: 10px; }
     .method .cell .mobile-isrequired {
       display: inline; } }
-      
 
 @media screen and (max-width: 768px) {
 
@@ -417,8 +416,9 @@ export default {
   }
 }
 
+*/      
 
-/* Row Utilities */
+/* Row Utilities
 [class^='row'].margin-0,
 [class*=' row'].margin-0,
 [class^='form-group'].margin-0,
@@ -453,4 +453,5 @@ export default {
   [class*=' form-group'].margin-0 [class*=' form-group'] {
     margin-left: 0;
     margin-right: 0; }
+ */
 </style>

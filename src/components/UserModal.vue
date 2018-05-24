@@ -148,11 +148,4 @@ http://www.bootstrapzen.com/item/135/simple-login-form-logo/
 	outline: none;
 }
 
-.form-control {
-  position: relative;
-  font-size: 16px;
-  height: auto;
-  padding: 10px;
-}
-
 </style>
