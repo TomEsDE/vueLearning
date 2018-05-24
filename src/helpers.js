@@ -25,6 +25,10 @@ function checkAxiosException (ex, callback, message) {
     callback.apply()
     EventBus.$emit('sending-login-event', 'show modal login dialog')
     // msg = 'Login erforderlich'
+  } else if (ex.response !== undefined && ex.response.status === 400) {
+    if (message) EventBus.$emit('global-error', { msg: msg, type: 'error', sticky: true })
+    if (ex.response.data) EventBus.$emit('global-error', { msg: ex.response.data, type: 'error', sticky: true })
+    // msg = 'Login erforderlich'
   } else {
     EventBus.$emit('global-error', { msg: msg, type: 'error', sticky: true })
   }

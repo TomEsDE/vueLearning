@@ -15,45 +15,80 @@
         <span v-if="modal && user.id" class="user-id">ID: <span v-text="user.id" /></span>
         <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
         
-        <div class="form-label-group">
+        <div class="input-group form-label-group">
+            <span class="input-group-append">
+                <div class="input-group-text bg-white border-right-0 rounded-left">
+                  <font-awesome-icon icon="envelope" size="lg" />
+                </div>
+            </span>
+            
+            <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control  rounded-right ' + inputEmailBorderClass" placeholder="Email address" required autofocus>
+            
+            <label class="inputicon" for="inputEmail">Email address</label>          
+            <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+              <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
+            </transition>
+        </div>
+
+        <!-- <div class="form-label-group">
           <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control ' + (inputEmailError ? 'red' : '')" placeholder="Email address" required autofocus>
           <label for="inputEmail">Email address</label>
           
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
           </transition>
-        </div>
+        </div> -->
 
-        <div class="form-label-group">
-          <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control ' + (inputUsernameError ? 'red' : '')" placeholder="Email address" required autofocus>
-          <label for="inputUsername">Username</label>
+        <div class="input-group form-label-group">
+            <span class="input-group-append">
+                <div class="input-group-text bg-white border-right-0 rounded-left">
+                  <font-awesome-icon icon="user" size="lg" />
+                </div>
+            </span>
+          <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control  rounded-right ' + inputUsernameBorderClass" placeholder="Email address" required autofocus>
+          <label class="inputicon" for="inputUsername">Username</label>
           
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputUsernameErrorText" class='form-error alert alert-danger' v-text="inputUsernameErrorText"></div>
           </transition>
         </div>
         
-        <div class="form-label-group">
-          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control ' + (inputPasswordError ? 'red' : '')" placeholder="Password" required>
-          <label for="inputPassword">Password</label>
+        <div class="input-group form-label-group">
+            <span class="input-group-append">
+                <div class="input-group-text bg-white border-right-0 rounded-left">
+                  <font-awesome-icon icon="unlock" size="lg" />
+                </div>
+            </span>
+          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control  rounded-right ' + inputPasswordBorderClass" placeholder="Password" required>
+          <label class="inputicon" for="inputPassword">Password</label>
 
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputPasswordErrorText" class='form-error alert alert-danger' v-text="inputPasswordErrorText"></div>
           </transition>
         </div>
         
-        <div class="form-label-group">
-          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control ' + (inputPasswordConfirmError ? 'red' : '')" placeholder="Password" required>
-          <label for="inputPasswordConfirm">Confirm Password</label>
+        <div class="input-group form-label-group">
+            <span class="input-group-append">
+                <div class="input-group-text bg-white border-right-0 rounded-left">
+                  <font-awesome-icon icon="unlock-alt" size="lg" />
+                </div>
+            </span>
+          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control  rounded-right ' + inputPasswordConfirmBorderClass" placeholder="Password" required disabled>
+          <label class="inputicon" for="inputPasswordConfirm">Confirm Password</label>
 
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputPasswordConfirmErrorText" class='form-error alert alert-danger' v-text="inputPasswordConfirmErrorText"></div>
           </transition>
         </div>
 
-        <div class="form-label-group">
-          <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control ' + (inputBalanceError ? 'red' : '')" placeholder="Email address" required autofocus>
-          <label for="inputBalance">Balance</label>
+        <div class="input-group form-label-group">
+            <span class="input-group-append">
+                <div class="input-group-text bg-white border-right-0 rounded-left">
+                  <font-awesome-icon icon="money-check-alt" size="lg" />
+                </div>
+            </span>
+          <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control  rounded-right ' + inputBalanceBorderClass" placeholder="Email address" required autofocus>
+          <label class="inputicon" for="inputBalance">Balance</label>
           
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputBalanceErrorText" class='form-error alert alert-danger' v-text="inputBalanceErrorText"></div>
@@ -102,6 +137,7 @@ export default {
       default: false
     }
   },
+  components: { FontAwesomeIcon },
   computed: {
   },
   data () {
@@ -120,21 +156,27 @@ export default {
           balance: 0
         }
       },
+      ignoreWatch: false,
       inputUsername: '',
       inputUsernameError: false,
       inputUsernameErrorText: this.defaultErrorText,
+      inputUsernameBorderClass: '',
       inputEmail: '',
       inputEmailError: false,
       inputEmailErrorText: this.defaultErrorText,
+      inputEmailBorderClass: '',
       inputPassword: '',
       inputPasswordError: false,
       inputPasswordErrorText: this.defaultErrorText,
+      inputPasswordBorderClass: '',
       inputPasswordConfirm: '',
       inputPasswordConfirmError: false,
       inputPasswordConfirmErrorText: this.defaultErrorText,
+      inputPasswordConfirmBorderClass: '',
       inputBalance: 0,
       inputBalanceError: false,
       inputBalanceErrorText: this.defaultErrorText,
+      inputBalanceBorderClass: '',
       error: {
         inputId: '',
         errorText: '',
@@ -143,7 +185,21 @@ export default {
       errors: new Map()
     }
   },
-  components: { FontAwesomeIcon },
+  watch: {
+    inputPassword: function (val, oldVal) {
+      if (this.ignoreWatch) return
+
+      let disabled = true
+      if (!val || val !== this.inputPasswordConfirm) {
+        disabled = false
+        if (val !== this.inputPasswordConfirm) {
+          this.inputPasswordConfirm = ''
+        }
+      }
+
+      $('#inputPasswordConfirm').prop('disabled', disabled)
+    }
+  },
   methods: {
     // a computed getter
     buttonDescription: function () {
@@ -169,9 +225,12 @@ export default {
         this.create = false
         this.isCreate = false
         EventBus.$emit('global-error', { msg: 'Speichern erfolgreich', type: 'success', sticky: false })
+
+        this.setBorderClassAll('')
       }).catch(e => {
         // this.errors.push(e)
         this.$helpers.checkAxiosException(e, () => this.hide(), 'Speichern fehlgeschlagen')
+        this.setBorderClassAll('red')
         // EventBus.$emit('global-error', { msg: 'Speichern fehlgeschlagen', type: 'error', sticky: true })
 
         $('#inputEmail').focus()
@@ -214,11 +273,15 @@ export default {
       }).then(resp => {
         this.user = resp.data
 
+        this.ignoreWatch = true
+
         this.inputEmail = this.user.email
         this.inputUsername = this.user.username
         this.inputPassword = this.user.password
         this.inputPasswordConfirm = this.user.password
         this.inputBalance = this.user.account.balance
+
+        this.ignoreWatch = false
 
         $('#btnSubmit').prop('disabled', false)
       }).catch(e => {
@@ -285,6 +348,8 @@ export default {
         }
       }
 
+      this.$data[input + 'BorderClass'] = error ? 'red' : 'green'
+
       // falls bereits ein Fehlertext angezeigt wird, mit Parallel-Verarbeitung (->setTimeout) Animations-Überschneidungen abfedern
       setTimeout(() => {
         this.$data[input + 'Error'] = error
@@ -321,16 +386,20 @@ export default {
       this.inputPassword = ''
       this.inputPasswordConfirm = ''
       this.inputBalance = 0
+
       this.inputEmailError = false
       this.inputUsernameError = false
       this.inputPasswordError = false
       this.inputPasswordConfirmError = false
       this.inputBalanceConfirmError = false
+
       this.inputEmailErrorText = ''
       this.inputUsernameErrorText = ''
       this.inputPasswordErrorText = ''
       this.inputPasswordConfirmErrorText = ''
       this.inputBalanceErrorText = ''
+
+      this.setBorderClassAll('')
 
       this.user = {
         id: null,
@@ -344,6 +413,13 @@ export default {
       }
       // this.liveValidation = false
       this.errors.clear()
+    },
+    setBorderClassAll: function (borderclass) {
+      this.inputUsernameBorderClass = borderclass
+      this.inputEmailBorderClass = borderclass
+      this.inputPasswordBorderClass = borderclass
+      this.inputPasswordConfirmBorderClass = borderclass
+      this.inputBalanceBorderClass = borderclass
     }
   },
   mounted () {
@@ -384,6 +460,10 @@ http://www.bootstrapzen.com/item/135/simple-login-form-logo/
   padding: 10px;
 }
 
+.input-group-text {
+  width: 50px;
+}
+
 .login-form {
 	margin-top: 60px;
 }
@@ -402,9 +482,10 @@ form[role=login] img {
   margin-bottom: 35px;
 }
 form[role=login] input,
-form[role=login] button {
+form[role=login] button,
+form[role=login] div {
   /*font-size: 18px;*/
-  margin: 16px 0;
+  margin: 10px 0;
 }
 form[role=login] > div {
   text-align: left;
@@ -438,8 +519,8 @@ form[role=login] > div {
 
 .form-label-group > label {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   display: block;
   width: 100%;
   margin-bottom: 0; /* Override default `<label>` margin */
@@ -449,16 +530,26 @@ form[role=login] > div {
   border-radius: .25rem;
   transition: all .1s ease-in-out;
   color: #777;
+  z-index: 200;
+}
+
+.form-label-group > label.inputicon {
+  top: 12px;
+  left: 49px;
 }
 
 .red {
   border-color: #FF0000;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
 }
+.green {
+  border-color: rgb(67, 211, 144);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(40, 173, 107, 0.6);
+}
 .form-error {
   position: absolute;
   top: 54px;
-  left: -15px;
+  left: 25px;
   display: block;
   padding: 2px;
   z-index: 1;

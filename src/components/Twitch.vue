@@ -11,14 +11,14 @@
 
     <div v-show="users.length > 0" class="container">
     <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm">
+    <table class="table table-hover table-sm">
       <thead>
         <tr>
           <th scope="col" :class="header[2].align">
             <span class="header">#</span>
           </th>
-          <th scope="col" :class="header[2].align">
-            <span class="header">action</span>
+          <th scope="col" class="text-center">
+            <span class="header"><font-awesome-icon icon="exclamation" size="lg" /></span>
           </th>
           <th scope="col" :class="h.align" v-for="(h, index) in header" v-bind:key="h.data" @click="sort(index)">
             <span class="header" v-text="h.desc" />
