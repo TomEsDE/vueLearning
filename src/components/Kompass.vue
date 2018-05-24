@@ -122,7 +122,6 @@
 import mynav from './mynav.vue'
 import { EventBus } from '../event-bus.js'
 import helper from '../helpers.js'
-import user from './User.vue'
 
 var message = 'Kompass'
 export default {
@@ -134,7 +133,7 @@ export default {
       animationStopFlag: 0
     }
   },
-  components: { mynav, user },
+  components: { mynav },
   methods: {
     // access child data!
     moveNeedle (toAngle) {

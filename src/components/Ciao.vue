@@ -8,13 +8,15 @@
     <button class="btn btn-primary" v-on:click="createUser">create New User</button>
     <button class="btn btn-primary" v-on:click="editUser">edit User {{userId}}</button>
     <user ref="userDlg" :userId="userId" :create="createNewUser" />
+    <user2 ref="userComp2" :userId="userId" :create="create" :modal="false" />
   </div>
     
 </template>
 
 <script>
 import mynav from './mynav.vue'
-import user from './User.vue'
+import user from './UserModal.vue'
+import user2 from './User.vue'
 import { EventBus } from '../event-bus.js'
 import jscookie from 'js-cookie'
 // import $ from 'jquery'
@@ -28,7 +30,7 @@ export default {
       userId: 11
     }
   },
-  components: { mynav, user },
+  components: { mynav, user, user2 },
   methods: {
     // access child data!
     deleteJwt () {
@@ -42,13 +44,13 @@ export default {
     },
     createUser () {
       this.createNewUser = true
-      this.$refs.userDlg.isCreate = true
+      // this.$refs.userDlg.isCreate = true
+      this.$refs.userDlg.setData(true, null)
       this.show()
     },
     editUser () {
       this.createNewUser = false
-      this.$refs.userDlg.isCreate = false
-      this.$refs.userDlg.user.id = this.userId
+      this.$refs.userDlg.setData(false, this.userId)
       this.show()
     },
     show () {

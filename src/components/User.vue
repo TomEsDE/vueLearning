@@ -7,90 +7,72 @@
     </modal>
     -->
 
-    <!-- Modal -->
-    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <div class="container-fluid">
-              
-              <div class="row" id="pwd-container">
-                
-                <div class="col-md-12">
-                  <section class="login-form">
-                    <form v-on:submit.prevent="onSubmit" class="form-signin" method="post" action="#" role="login" novalidate>
-                    <button type="button" class="close" aria-label="Close" v-on:click="hide()">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                      <span class="user-id">ID: <span v-text="user.id" /></span>
-                      <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
-                      
-                      <div class="form-label-group">
-                        <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control ' + (inputEmailError ? 'red' : '')" placeholder="Email address" required autofocus>
-                        <label for="inputEmail">Email address</label>
-                        
-                        <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
-                          <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
-                        </transition>
-                      </div>
-
-                      <div class="form-label-group">
-                        <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control ' + (inputUsernameError ? 'red' : '')" placeholder="Email address" required autofocus>
-                        <label for="inputUsername">Username</label>
-                        
-                        <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
-                          <div v-if="liveValidation && inputUsernameErrorText" class='form-error alert alert-danger' v-text="inputUsernameErrorText"></div>
-                        </transition>
-                      </div>
-                      
-                      <div class="form-label-group">
-                        <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control ' + (inputPasswordError ? 'red' : '')" placeholder="Password" required>
-                        <label for="inputPassword">Password</label>
-
-                        <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
-                          <div v-if="liveValidation && inputPasswordErrorText" class='form-error alert alert-danger' v-text="inputPasswordErrorText"></div>
-                        </transition>
-                      </div>
-                      
-                      <div class="form-label-group">
-                        <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control ' + (inputPasswordConfirmError ? 'red' : '')" placeholder="Password" required>
-                        <label for="inputPasswordConfirm">Confirm Password</label>
-
-                        <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
-                          <div v-if="liveValidation && inputPasswordConfirmErrorText" class='form-error alert alert-danger' v-text="inputPasswordConfirmErrorText"></div>
-                        </transition>
-                      </div>
-
-                      <div class="form-label-group">
-                        <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control ' + (inputBalanceError ? 'red' : '')" placeholder="Email address" required autofocus>
-                        <label for="inputBalance">Balance</label>
-                        
-                        <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
-                          <div v-if="liveValidation && inputBalanceErrorText" class='form-error alert alert-danger' v-text="inputBalanceErrorText"></div>
-                        </transition>
-                      </div>
-                      
-                      <div class="pwstrength_viewport_progress"></div>                      
-                      
-                      <!--
-                      <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
-                      <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
-                      -->
-                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">
-                        <font-awesome-icon icon="save" size="lg" />
-                        <span v-text="buttonDescription()" />
-                      </button>
-                      
-                    </form>
-                  </section>  
-                </div>                     
-
-              </div>
-            </div>
-          </div>
+    <section class="login-form">
+      <form v-on:submit.prevent="onSubmit" class="form-signin" method="post" action="#" role="login" novalidate>
+        <button v-if="modal" type="button" class="close" aria-label="Close" v-on:click="hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <span v-if="modal && user.id" class="user-id">ID: <span v-text="user.id" /></span>
+        <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
+        
+        <div class="form-label-group">
+          <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control ' + (inputEmailError ? 'red' : '')" placeholder="Email address" required autofocus>
+          <label for="inputEmail">Email address</label>
+          
+          <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+            <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
+          </transition>
         </div>
-      </div>
-    </div>
+
+        <div class="form-label-group">
+          <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control ' + (inputUsernameError ? 'red' : '')" placeholder="Email address" required autofocus>
+          <label for="inputUsername">Username</label>
+          
+          <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+            <div v-if="liveValidation && inputUsernameErrorText" class='form-error alert alert-danger' v-text="inputUsernameErrorText"></div>
+          </transition>
+        </div>
+        
+        <div class="form-label-group">
+          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control ' + (inputPasswordError ? 'red' : '')" placeholder="Password" required>
+          <label for="inputPassword">Password</label>
+
+          <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+            <div v-if="liveValidation && inputPasswordErrorText" class='form-error alert alert-danger' v-text="inputPasswordErrorText"></div>
+          </transition>
+        </div>
+        
+        <div class="form-label-group">
+          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control ' + (inputPasswordConfirmError ? 'red' : '')" placeholder="Password" required>
+          <label for="inputPasswordConfirm">Confirm Password</label>
+
+          <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+            <div v-if="liveValidation && inputPasswordConfirmErrorText" class='form-error alert alert-danger' v-text="inputPasswordConfirmErrorText"></div>
+          </transition>
+        </div>
+
+        <div class="form-label-group">
+          <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control ' + (inputBalanceError ? 'red' : '')" placeholder="Email address" required autofocus>
+          <label for="inputBalance">Balance</label>
+          
+          <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+            <div v-if="liveValidation && inputBalanceErrorText" class='form-error alert alert-danger' v-text="inputBalanceErrorText"></div>
+          </transition>
+        </div>
+        
+        <div class="pwstrength_viewport_progress"></div>                      
+        
+        <!--
+        <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
+        <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
+        -->
+        <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">
+          <font-awesome-icon icon="save" size="lg" />
+          <span v-text="buttonDescription()" />
+        </button>
+        
+      </form>
+    </section>
   </div>
 </template>
 
@@ -106,13 +88,18 @@ export default {
   props: {
     userId: {
       type: Number,
-      required: true,
+      required: false,
       default: 0
     },
     create: {
       type: Boolean,
-      required: true,
+      required: false,
       default: true
+    },
+    modal: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   computed: {
@@ -320,14 +307,10 @@ export default {
         setTimeout(resolve.bind(null, v), t)
       })
     },
-    show: function () {
-      // this.$modal.show('login')
-      // $('#loginModal').modal('show')
-      $('#userModal').modal('show')
-    },
     hide: function () {
-      // this.$modal.hide('login')
-      $('#userModal').modal('hide')
+      if (this.modal) {
+        this.$emit('hide')
+      }
     },
     clear: function () {
       for (var key of this.errors.keys()) {
@@ -366,44 +349,6 @@ export default {
   mounted () {
     console.log('User Component mounted!')
     $('#inputEmail').focus()
-
-    // bootstrap modal listener
-    $('#userModal').on('hide.bs.modal', e => {
-      // console.log('#userModal getting closed')
-      // EventBus.$emit('user-hide')
-      this.clear()
-    })
-
-    // bootstrap modal listener
-    $('#userModal').on('shown.bs.modal', e => {
-      console.log('#userModal shown >>> ' + this.isCreate)
-      // EventBus.$emit('user-shown')
-      if (this.isCreate) {
-        this.clear()
-        $('#btnSubmit').prop('disabled', false)
-      } else {
-        this.getUser()
-      }
-      $('#inputEmail').focus()
-    })
-    /*
-    // EventBus.$emit('sending-login-event', 'show modal login dialog')
-    EventBus.$off('user-shown') // um 'multiple' Listener-Anmeldungen zu vermeiden
-    EventBus.$on('user-shown', msg => {
-      console.log('EventBus #userModal shown')
-      // if (this.create) {
-      // if (this.isCreate) {
-      //   this.clear()
-      // } else {
-      //   this.getUser()
-      // }
-      // $('#inputEmail').focus()
-    })
-    EventBus.$off('user-hide') // um 'multiple' Listener-Anmeldungen zu vermeiden
-    EventBus.$on('user-hide', msg => {
-      this.clear()
-    })
-    */
   }
 }
 </script>

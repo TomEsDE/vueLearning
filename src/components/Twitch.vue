@@ -105,7 +105,7 @@
 <script>
 import { EventBus } from '../event-bus.js'
 import mynav from './mynav.vue'
-import user from './User.vue'
+import user from './UserModal.vue'
 import paging from './table-pagination.vue'
 import { mapState } from 'vuex'
 import axios from 'axios'
@@ -160,8 +160,7 @@ export default {
       }).catch(e => this.errors.push)
     },
     onEditUser (userId) {
-      this.$refs.userDlg.isCreate = false
-      this.$refs.userDlg.user.id = userId
+      this.$refs.userDlg.setData(false, userId)
       this.show()
     },
     getuserAll: function (init) {
