@@ -215,12 +215,13 @@ export default {
       ignoreWatch: false,
       trainingStarted: false,
       reactInTime: false,
-      startCounterFrom: 5,
+      startCounterFrom: 3,
       buttonNeedleText: 'Kompass ausrichten',
       animationStopFlag: 0,
+      trainingStopFlag: 0,
       defaultErrorText: 'Bitte geben Sie Daten ein',
       selectDiff: 1,
-      inputDuration: 30,
+      inputDuration: 10,
       inputDurationError: false,
       inputDurationErrorText: this.defaultErrorText,
       inputDurationBorderClass: '',
@@ -275,7 +276,7 @@ export default {
       var promise = null
       var counterArray = [...Array(this.startCounterFrom).keys()].map(n => n + 1).reverse()
       counterArray.forEach((number, index) => {
-        console.log('index : ' + index + ' - number : ' + number)
+        // console.log('index : ' + index + ' - number : ' + number)
         if (index === 0) promise = show(number).then(hide)
         else promise = promise.then(x => show(number)).then(hide)
       })
@@ -289,6 +290,63 @@ export default {
     startTraining: function () {
       console.log('start Training!')
       this.showHideDirectionLabels(true)
+      this.startTrainingTimer()
+
+      // nächstes Richtungs-Popup anzeigen
+      var nextPopUp = function () {
+        return new Promise((resolve, reject) => {
+          console.log('nextPopUp promise')
+
+          let nextPopupIn = Math.floor(Math.random() * 2000) + 2000
+          console.log('nextPopupIn: ' + nextPopupIn)
+
+          setTimeout(() => {
+            if (this.trainingStopFlag) {
+              reject(new Error('trainingStopFlag'))
+              return
+            }
+            this.showHideDirectionLabels(true)
+
+            let popupIdx = Math.floor(Math.random() * this.directions.length)
+            console.log('popup: ' + this.directions[popupIdx])
+
+            this.setPopupDir(this.directions[popupIdx])
+            this.reactInTime = true
+
+            setTimeout(() => {
+              this.reactInTime = false
+              this.hidePopupDir()
+              resolve('x')
+            }, 1000) // TODO depends on difficulty choice!
+          }, nextPopupIn)
+        })
+      }.bind(this)
+
+      // Promise-Chain mit aufeinander folgenden Popups aufbauen -> bei Exception ist die Trainingszeit abgelaufen
+      var array = [...Array(Math.floor(this.inputDuration / 2) + 5).keys()] // Länge des Arrays abhängig vom gewählten Zeitfenster machen
+      console.log('array.length: ' + array.length)
+      var promise = nextPopUp()
+      array.forEach((number, index) => {
+        // console.log('index : ' + index + ' - number : ' + number)
+        promise = promise.then(x => nextPopUp())
+        if (index === array.length - 1) {
+          // ist die Zeit vorüber, wird eine Exception geschmissen => hier dann weiter machen
+          promise = promise.catch(e => console.log(e.message))
+        }
+      })
+    },
+    startTrainingTimer: function () {
+      let duration = this.inputDuration
+      var interval = setInterval(() => {
+        if (this.trainingStopFlag || duration <= 0) {
+          clearInterval(interval)
+          this.trainingStarted = false
+          this.trainingStopFlag = true
+        }
+
+        this.showTimer(duration + 's', 'black')
+        duration -= 1
+      }, 1000)
     },
     delay: function (t, v) {
       return new Promise(resolve => setTimeout(resolve.bind(null, v), t))
@@ -298,9 +356,20 @@ export default {
         return new Promise(resolve => setTimeout(() => resolve(v), t))
       }
     },
+    showTimer: function (text, color) {
+      this.setTimer(text, color, false)
+    },
+    hideTimer: function () {
+      this.setTimer('', 'black', true)
+    },
+    setTimer: function (text, color, hide) {
+      this.showHideSvgObject('group_timer', hide)
+      this.setTextSvg('txtTimer', text)
+      this.setAttrSvgObject('txtTimer', 'fill', color)
+    },
     showHideDirectionLabels: function (hide) {
       this.ns.forEach((dir, index) => {
-        console.log('>>> ' + dir)
+        // console.log('>>> ' + dir)
         this.setAttrSvgObject('txt_' + dir, 'visibility', hide ? 'hidden' : 'visible')
         this.setAttrSvgObject('txt_' + dir, 'fill', 'black')
         this.setTextSvg('txt_' + dir, this.directions[index])
@@ -417,6 +486,7 @@ export default {
   },
   mounted () {
     this.show()
+    this.directions = this.ns
 
     // Listen to the event.
     EventBus.$on('kompass-key-event', keyName => {
@@ -424,6 +494,7 @@ export default {
       var toAngle = directionKeys.indexOf(keyName) * 45
       console.log('toAngle: ' + toAngle)
       if ((this.trainingStarted && this.reactInTime) || !this.trainingStarted) {
+        this.reactInTime = false // nur eine Eingabe erlaubt nach Popup
         this.moveNeedle(toAngle)
       }
     })
