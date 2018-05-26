@@ -8,6 +8,7 @@
     <button class="btn btn-primary" v-on:click="createUser">create New User</button>
     <button class="btn btn-primary" v-on:click="editUser">edit User {{userId}}</button>
     <!-- <user ref="userDlg" :userId="userId" :create="createNewUser" /> -->
+    
     <user2 ref="userComp2" :userId="userId" :create="create" :modal="false" />
   </div>
     

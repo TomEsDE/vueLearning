@@ -132,11 +132,6 @@ over-ride "Weak" message, show font in dark grey
 Reference:
 http://www.bootstrapzen.com/item/135/simple-login-form-logo/
 */
-.modal-content {
-  background-color: unset;
-  border: none;
-}
-
 .container {
   min-width: 400px;
 }

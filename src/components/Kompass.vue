@@ -4,6 +4,87 @@
 
     <button class="btn btn-lg btn-danger btn-block" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))"><h3>{{ buttonNeedleText }}</h3></button>
     <br />
+    
+    <!-- Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="container-fluid">              
+              <div class="row" id="pwd-container">                
+                <div class="col-md-12">
+                  <!-- Settings -->                  
+                  <section class="login-form">
+                    <form v-on:submit.prevent="onSubmit" class="form-signin" method="post" action="#" role="login" novalidate>
+                      <button type="button" class="close" aria-label="Close" v-on:click="hide()">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                      <!-- <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" /> -->
+
+                      <h1>Training</h1>
+                      <br />
+                      <h4 class="text-left">Einstellungen</h4>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <label class="input-group-text border-right-0 w-100" for="inputGroupSelect01">Difficulty</label>
+                        </div>
+                        <select v-model="selectDiff" class="custom-select" id="inputSelectDiff">
+                          <option value="1">Easy</option>
+                          <option value="2">Hard</option>
+                          <option value="3">Difficult</option>
+                        </select>
+                      </div>
+
+                      <div class="duration input-group form-label-group">
+                        <span class="input-group-prepend">
+                            <div class="input-group-text bg-white border-right-0 w-100">
+                              <font-awesome-icon icon="clock" size="lg" />
+                            </div>
+                        </span>
+                        <input type="number" v-model="inputDuration" id="inputDuration" :class="'form-control border-left-0 border-right-0 ' + inputDurationBorderClass" placeholder="Email address" required autofocus>
+                        <label class="inputicon" for="inputDuration">Duration</label>
+
+                        <div class="input-group-append">
+                          <label class="durationSec input-group-text w-100" for="inputGroupSelect01">s</label>
+                        </div>
+                        
+                        <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
+                          <div v-if="inputDurationErrorText" class='form-error alert alert-danger' v-text="inputDurationErrorText"></div>
+                        </transition>
+                      </div>
+
+                      <h4 class="text-left">Layout</h4>
+                      <!-- <b-form-group>
+                        <b-form-radio-group v-model="inputLayout"
+                                            :options="optionsLayout"
+                                            name="radioInline">
+                        </b-form-radio-group>
+                      </b-form-group> -->
+                      
+                      <b-form-group>
+                        <b-form-radio-group id="btnradios1"
+                                            buttons
+                                            button-variant="success"
+                                            v-model="inputLayout"
+                                            :options="optionsLayout"
+                                            name="radiosBtnDefault" />
+                      </b-form-group>
+                      <br />
+                      
+                      <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">
+                        <font-awesome-icon icon="play-circle" size="lg" />
+                        Training starten
+                      </button>
+
+                    </form>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <svg width="40%" height="40%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
       xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -122,6 +203,8 @@
 import mynav from './mynav.vue'
 import { EventBus } from '../event-bus.js'
 import helper from '../helpers.js'
+import $ from 'jquery'
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 
 var message = 'Kompass'
 export default {
@@ -129,12 +212,127 @@ export default {
     return {
       sharedItems: mynav.data,
       msg: message,
+      ignoreWatch: false,
+      trainingStarted: false,
+      reactInTime: false,
+      startCounterFrom: 5,
       buttonNeedleText: 'Kompass ausrichten',
-      animationStopFlag: 0
+      animationStopFlag: 0,
+      defaultErrorText: 'Bitte geben Sie Daten ein',
+      selectDiff: 1,
+      inputDuration: 30,
+      inputDurationError: false,
+      inputDurationErrorText: this.defaultErrorText,
+      inputDurationBorderClass: '',
+      inputLayout: 'ns',
+      optionsLayout: [
+        { text: 'Nord Süd', value: 'ns' },
+        { text: 'Links Rechts', value: 'lr' },
+        { text: 'gemischt', value: 'mixed' }
+      ],
+      ns: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+      lr: ['Oben', 'RO', 'R', 'RU', 'Unten', 'LU', 'L', 'LO'],
+      directions: []
     }
   },
-  components: { mynav },
+  components: { mynav, FontAwesomeIcon },
+  watch: {
+    inputLayout: function (val, oldVal) {
+      if (this.ignoreWatch) return
+
+      this.directions = val === 'lr' ? this.lr : this.ns
+      this.showHideDirectionLabels(false)
+    }
+  },
   methods: {
+    onSubmit: function () {
+      console.log('form submitted')
+      this.startCounter().then(x => this.startTraining())
+    },
+    startCounter: function () {
+      this.hide()
+      console.log('settings >>> diff: ' + this.selectDiff + ' - duration: ' + this.inputDuration + ' - Layout: ' + this.inputLayout)
+      this.trainingStarted = true
+
+      var show = function (number, sleep = 700) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            this.setPopupCounter(number)
+            resolve(number)
+          }, sleep)
+        })
+      }.bind(this)
+
+      var hide = function (number, sleep = 500) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            this.hidePopupCounter()
+            resolve(number - 1)
+          }, sleep)
+        })
+      }.bind(this)
+
+      var promise = null
+      var counterArray = [...Array(this.startCounterFrom).keys()].map(n => n + 1).reverse()
+      counterArray.forEach((number, index) => {
+        console.log('index : ' + index + ' - number : ' + number)
+        if (index === 0) promise = show(number).then(hide)
+        else promise = promise.then(x => show(number)).then(hide)
+      })
+
+      // nach Countdown Training starten
+      return promise
+
+      // manueller Countdown als Beispiel
+      // show(3, 500).then(hide).then(show).then(hide).then(show).then(hide).then(x => this.startTraining())
+    },
+    startTraining: function () {
+      console.log('start Training!')
+      this.showHideDirectionLabels(true)
+    },
+    delay: function (t, v) {
+      return new Promise(resolve => setTimeout(resolve.bind(null, v), t))
+    },
+    sleeper: function (t) {
+      return function (v) {
+        return new Promise(resolve => setTimeout(() => resolve(v), t))
+      }
+    },
+    showHideDirectionLabels: function (hide) {
+      this.ns.forEach((dir, index) => {
+        console.log('>>> ' + dir)
+        this.setAttrSvgObject('txt_' + dir, 'visibility', hide ? 'hidden' : 'visible')
+        this.setAttrSvgObject('txt_' + dir, 'fill', 'black')
+        this.setTextSvg('txt_' + dir, this.directions[index])
+      })
+    },
+    setPopupCounter: function (text) {
+      console.log('setPopupCounter')
+      this.setPopup(text, false, false)
+    },
+    hidePopupCounter: function () {
+      console.log('hidePopupCounter')
+      this.setPopup('', false, true)
+    },
+    setPopupDir: function (text) {
+      this.setPopup(text, true, false)
+    },
+    hidePopupDir: function () {
+      this.setPopup('', true, true)
+    },
+    setPopup: function (text, dir, hide) {
+      this.showHideSvgObject(dir ? 'group_popup_dir' : 'group_popup', hide)
+      this.setTextSvg(dir ? 'txtPopupDir' : 'txtPopup', text)
+    },
+    showHideSvgObject: function (id, hide) {
+      this.setAttrSvgObject(id, 'visibility', hide ? 'hidden' : 'visible')
+    },
+    setAttrSvgObject: function (id, attr, value) {
+      $('#' + id).attr(attr, value)
+    },
+    setTextSvg: function (id, text) {
+      $('#' + id).text(text)
+    },
     // access child data!
     moveNeedle (toAngle) {
       // console.log(document.getElementById('needle'))
@@ -187,10 +385,10 @@ export default {
         // console.log('nextPos: ' + nextPos)
         if (nextPos === undefined) {
           clearInterval(interval)
-          document.getElementById('needle').setAttribute('transform', 'rotate(' + toAngle + ',200,200)')
+          this.setAttrSvgObject('needle', 'transform', 'rotate(' + toAngle + ',200,200)')
         } else {
-          document.getElementById('needle').setAttribute('transform', 'rotate(' + nextPos + ',200,200)')
-          document.getElementById('needle').setAttribute('angle', String.valueOf(nextPos))
+          this.setAttrSvgObject('needle', 'transform', 'rotate(' + nextPos + ',200,200)')
+          this.setAttrSvgObject('needle', 'angle', String.valueOf(nextPos))
         }
       }, sleepPerDegree)
 
@@ -206,20 +404,60 @@ export default {
         }
       }
       */
+    },
+    show: function () {
+      // this.$modal.show('login')
+      // $('#loginModal').modal('show')
+      $('#settingsModal').modal('show')
+    },
+    hide: function () {
+      // this.$modal.hide('login')
+      $('#settingsModal').modal('hide')
     }
   },
   mounted () {
+    this.show()
+
     // Listen to the event.
     EventBus.$on('kompass-key-event', keyName => {
       var directionKeys = ['8', '9', '6', '3', '2', '1', '4', '7']
       var toAngle = directionKeys.indexOf(keyName) * 45
       console.log('toAngle: ' + toAngle)
-      this.moveNeedle(toAngle)
+      if ((this.trainingStarted && this.reactInTime) || !this.trainingStarted) {
+        this.moveNeedle(toAngle)
+      }
     })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped src="../assets/css/form.css">
+</style>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+form[role=login] {
+  height: 520px;
+}
+
+.form-control {
+  width: 80px;
+  flex: none;
+  text-align: right;
+}
+
+div.duration {
+  left: 57%;
+}
+
+.durationSec {
+  padding: 15px 10px 0px 10px;
+}
+
+#btnSubmit {
+  position: absolute;
+  bottom: 10px;
+  width: 80%;
+}
 </style>

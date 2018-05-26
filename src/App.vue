@@ -30,7 +30,9 @@ import { EventBus } from './event-bus.js'
 import Login from '@/components/Login'
 import $ from 'jquery'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'animate.css/animate.min.css'
+import 'vue-popperjs/dist/css/vue-popper.css'
 
 export default {
   name: 'app',

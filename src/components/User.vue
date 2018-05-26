@@ -16,13 +16,13 @@
         <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
         
         <div class="input-group form-label-group">
-            <span class="input-group-append">
-                <div class="input-group-text bg-white border-right-0 rounded-left">
+            <span class="input-group-prepend">
+                <div class="input-group-text bg-white border-right-0">
                   <font-awesome-icon icon="envelope" size="lg" />
                 </div>
             </span>
             
-            <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control  rounded-right ' + inputEmailBorderClass" placeholder="Email address" required autofocus>
+            <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control border-left-0 rounded-right ' + inputEmailBorderClass" placeholder="Email address" required autofocus>
             
             <label class="inputicon" for="inputEmail">Email address</label>          
             <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
@@ -40,12 +40,12 @@
         </div> -->
 
         <div class="input-group form-label-group">
-            <span class="input-group-append">
+            <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0 rounded-left">
                   <font-awesome-icon icon="user" size="lg" />
                 </div>
             </span>
-          <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control  rounded-right ' + inputUsernameBorderClass" placeholder="Email address" required autofocus>
+          <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control border-left-0 rounded-right ' + inputUsernameBorderClass" placeholder="Email address" required autofocus>
           <label class="inputicon" for="inputUsername">Username</label>
           
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
@@ -54,12 +54,12 @@
         </div>
         
         <div class="input-group form-label-group">
-            <span class="input-group-append">
+            <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0 rounded-left">
                   <font-awesome-icon icon="unlock" size="lg" />
                 </div>
             </span>
-          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control  rounded-right ' + inputPasswordBorderClass" placeholder="Password" required>
+          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control border-left-0 rounded-right ' + inputPasswordBorderClass" placeholder="Password" required>
           <label class="inputicon" for="inputPassword">Password</label>
 
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
@@ -68,12 +68,12 @@
         </div>
         
         <div class="input-group form-label-group">
-            <span class="input-group-append">
+            <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0 rounded-left">
                   <font-awesome-icon icon="unlock-alt" size="lg" />
                 </div>
             </span>
-          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control  rounded-right ' + inputPasswordConfirmBorderClass" placeholder="Password" required disabled>
+          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control border-left-0 rounded-right ' + inputPasswordConfirmBorderClass" placeholder="Password" required disabled>
           <label class="inputicon" for="inputPasswordConfirm">Confirm Password</label>
 
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
@@ -82,12 +82,12 @@
         </div>
 
         <div class="input-group form-label-group">
-            <span class="input-group-append">
+            <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0 rounded-left">
                   <font-awesome-icon icon="money-check-alt" size="lg" />
                 </div>
             </span>
-          <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control  rounded-right ' + inputBalanceBorderClass" placeholder="Email address" required autofocus>
+          <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control border-left-0 rounded-right ' + inputBalanceBorderClass" placeholder="Email address" required autofocus>
           <label class="inputicon" for="inputBalance">Balance</label>
           
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
@@ -425,178 +425,21 @@ export default {
   mounted () {
     console.log('User Component mounted!')
     $('#inputEmail').focus()
+
+    // $('input').focus(function () {
+    //   // console.log('focus input >>> ' + $(this).prev('span div').children().next('div').prop('tagName'))
+    //   $(this).prev('span').children().addClass('red border-right-0')
+    // })
+
+    // $('input').blur(function () {
+    //   // console.log('focus input >>> ' + $(this).prev('span div').children().next('div').prop('tagName'))
+    //   $(this).prev('span').children().removeClass('red border-right-0')
+    // })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-/*
-over-ride "Weak" message, show font in dark grey
-*/
-.close {
-  position: absolute;
-  right: 10%;
-  top: 10%;
-}
-.user-id {
-  position: absolute;
-  left: 10%;
-  top: 15%;
-}
-.progress-bar {
-    color: #333;
-} 
-
-/*
-Reference:
-http://www.bootstrapzen.com/item/135/simple-login-form-logo/
-*/
-
-.form-control {
-  position: relative;
-  font-size: 16px;
-  height: auto;
-  padding: 10px;
-}
-
-.input-group-text {
-  width: 50px;
-}
-
-.login-form {
-	margin-top: 60px;
-}
-
-form[role=login] {
-	color: #5d5d5d;
-	background: #f2f2f2;
-	padding: 26px;
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-}
-form[role=login] img {
-  display: block;
-  margin: 0 auto;
-  margin-bottom: 35px;
-}
-form[role=login] input,
-form[role=login] button,
-form[role=login] div {
-  /*font-size: 18px;*/
-  margin: 10px 0;
-}
-form[role=login] > div {
-  text-align: left;
-}
-	
-.form-links {
-	text-align: center;
-	margin-top: 1em;
-	margin-bottom: 50px;
-}
-.form-links a {
-  color: #fff;
-}
-
-.form-signin {
-  width: 100%;
-  max-width: 420px;
-  padding: 15px;
-  margin: auto;
-}
-
-.form-label-group {
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
-.form-label-group > input,
-.form-label-group > label {
-  padding: var(--input-padding-y) var(--input-padding-x);
-}
-
-.form-label-group > label {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: block;
-  width: 100%;
-  margin-bottom: 0; /* Override default `<label>` margin */
-  line-height: 1.5;
-  color: #495057;
-  border: 1px solid transparent;
-  border-radius: .25rem;
-  transition: all .1s ease-in-out;
-  color: #777;
-  z-index: 200;
-}
-
-.form-label-group > label.inputicon {
-  top: 12px;
-  left: 49px;
-}
-
-.red {
-  border-color: #FF0000;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
-}
-.green {
-  border-color: rgb(67, 211, 144);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(40, 173, 107, 0.6);
-}
-.form-error {
-  position: absolute;
-  top: 54px;
-  left: 25px;
-  display: block;
-  padding: 2px;
-  z-index: 1;
-  border-style: dotted;
-  border-color: rgb(223, 124, 124)
-}
-.form-error:before {  
-  content: ' ';  
-  position: absolute;  
-  width: 0;  
-  height: 0;  
-  left: 30px;  
-  top: -10px;  
-  border: 5px solid;
-  border-color:  transparent transparent rgb(223, 124, 124) transparent;  
-}
-
-.form-label-group input::-webkit-input-placeholder {
-  color: transparent;
-}
-
-.form-label-group input:-ms-input-placeholder {
-  color: transparent;
-}
-
-.form-label-group input::-ms-input-placeholder {
-  color: transparent;
-}
-
-.form-label-group input::-moz-placeholder {
-  color: transparent;
-}
-
-.form-label-group input::placeholder {
-  color: transparent;
-}
-
-.form-label-group input:not(:placeholder-shown) {
-  padding-top: calc(var(--input-padding-y) + var(--input-padding-y) * (2 / 3));
-  padding-bottom: calc(var(--input-padding-y) / 3);
-}
-
-.form-label-group input:not(:placeholder-shown) ~ label {
-  padding-top: calc(var(--input-padding-y) / 3);
-  padding-bottom: calc(var(--input-padding-y) / 3);
-  font-size: 12px;
-  color: #777;
-}
+<style scoped src="../assets/css/form.css">
 
 </style>

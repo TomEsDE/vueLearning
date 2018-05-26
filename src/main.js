@@ -8,6 +8,7 @@ import axios from 'axios'
 import VModal from 'vue-js-modal'
 import helpers from './helpers'
 import 'bootstrap'
+import BootstrapVue from 'bootstrap-vue'
 import fontawesome from '@fortawesome/fontawesome'
 import brands from '@fortawesome/fontawesome-free-brands'
 import { faCoffee, faCog, faSpinner, faQuoteLeft, faSquare, faCheckSquare } from '@fortawesome/fontawesome-free-solid'
@@ -16,6 +17,7 @@ fontawesome.library.add(brands, faCoffee, faCog, faSpinner, faQuoteLeft, faSquar
 
 Vue.config.productionTip = false
 Vue.use(VModal)
+Vue.use(BootstrapVue)
 
 axios.defaults.headers.common['Authorization'] = 'Bearer token-301739.38487642474'
 axios.defaults.baseURL = 'api/useraccount'
