@@ -1,5 +1,7 @@
 TODOs
 -----
 - E statistik und endergebnis anzeigen
-- statistik übersicht im modalen dialog anzeigbar machen
-- mixed/random Directions
+- E statistik übersicht im modalen dialog anzeigbar machen
+- E mixed/random Directions
+- nadel 'ausschwingen' lassen
+- E statistik übersicht in scrollpane

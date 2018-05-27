@@ -2,12 +2,16 @@
   <div>
 	  <mynav ref="nav" :showTwitch="true"/>
 
-    <button class="btn btn-lg btn-danger btn-block" :disabled="trainingStarted" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))"><h3>{{ buttonNeedleText }}</h3></button>
-    <button v-if="trainingStarted" class="btn btn-lg btn-danger btn-block" v-on:click="stopTraining()"><h3>Stop Training</h3></button>
-    <button v-else class="btn btn-lg btn-danger btn-block" v-on:click="show()"><h3>Settings</h3></button>
+    <div class="buttons">
+      <button class="btn btn-lg btn-danger btn-block" :disabled="trainingStarted" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))"><h4>{{ buttonNeedleText }}</h4></button>
+      <button v-if="trainingStarted" class="btn btn-lg btn-danger btn-block" v-on:click="stopTraining()"><h4>Stop Training</h4></button>
+      <button v-else class="btn btn-lg btn-danger btn-block" v-on:click="show()"><h4>Settings</h4></button>
+      <button v-if="showStats" class="btn btn-lg btn-danger btn-block" v-on:click="showStatistics()"><h4>Statistiken</h4></button>
+      <!-- <button class="btn btn-lg btn-danger btn-block" v-on:click="getPopupDirection(getRandomPopupIdx())"><h4>TEST</h4></button> -->
+    </div>
     <br />
     
-    <!-- Modal -->
+    <!-- Modal Settings -->
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -15,7 +19,7 @@
             <div class="container-fluid">              
               <div class="row" id="pwd-container">                
                 <div class="col-md-12">
-                  <!-- Settings -->                  
+                  <!-- Settings -->
                   <section class="login-form">
                     <form v-on:submit.prevent="onSubmit" class="form-signin" method="post" action="#" role="login" novalidate>
                       <button type="button" class="close" aria-label="Close" v-on:click="hide()">
@@ -80,6 +84,67 @@
 
                     </form>
                   </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Stats -->
+    <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-stat" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="container-fluid">              
+              <div class="row" id="pwd-container">                
+                <div class="col-md-12 statSection">
+                  <button type="button" class="close closeStat" aria-label="Close" v-on:click="hideStatistics()">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <!-- Settings -->       
+                  <h1>Statistiken</h1>
+                  <br />                      
+                  <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th scope="col" :class="header[2].align">
+                            <span class="header">#</span>
+                          </th>
+                          <th scope="col" :class="h.align" v-for="(h, index) in header" v-bind:key="h.data" @click="sort(index)">
+                            <span class="header" v-text="h.desc" />
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(stat, index) of stats" v-bind:key="index">
+                          <td :class="header[2].align" :data-title="header[2].desc">
+                            <span v-text="index + 1"></span>
+                          </td>
+                          <td :class="header[0].align" :data-title="header[0].desc">
+                            <span v-text="stat.popup"></span>
+                          </td>
+                          <td :class="header[1].align" :data-title="header[1].desc">
+                            <span v-text="stat.userInput"></span>
+                          </td>
+                          <td :class="header[2].align" :data-title="header[2].desc">
+                            <font-awesome-icon v-if="stat.result === 1" icon="check" size="lg" />
+                          </td>
+                          <td :class="header[3].align" :data-title="header[3].desc">
+                            <font-awesome-icon v-if="stat.result === 2 || stat.result === 4" icon="check" size="lg" />
+                          </td>
+                          <td :class="header[4].align" :data-title="header[4].desc">
+                            <font-awesome-icon v-if="stat.result === 3 || stat.result === 4" icon="check" size="lg" />
+                          </td>
+                          <td :class="header[5].align" :data-title="header[5].desc">
+                            <span v-text="stat.reactionTime + ' ms'"></span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -196,7 +261,7 @@
       <line fill="none" stroke="#bf5f00" stroke-width="2" x1="200" y1="55.5" x2="200" y2="157.5" stroke-dasharray="5,5" stroke-linecap="round" id="svg_6"/>
       <line fill="none" stroke="#bf5f00" stroke-width="2" x1="200" y1="238.5" x2="200" y2="340.5" stroke-dasharray="5,5" stroke-linecap="round" id="svg_7"/>
       -->
-  </svg>
+    </svg>
   </div>
     
 </template>
@@ -239,7 +304,15 @@ export default {
       ns: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
       lr: ['Oben', 'RO', 'R', 'RU', 'Unten', 'LU', 'L', 'LO'],
       directions: [],
-      stats: []
+      stats: [],
+      showStats: true,
+      header: [
+        {desc: 'Vorgabe', colsize: 2, align: 'text-middle'},
+        {desc: 'Input', colsize: 2, align: 'text-middle'},
+        {desc: 'korrekt', colsize: 1, align: 'text-middle'},
+        {desc: 'falsch', colsize: 1, align: 'text-middle'},
+        {desc: 'zu spät', colsize: 1, align: 'text-middle'},
+        {desc: 'Reaktionszeit', colsize: 5, align: 'text-right'}]
     }
   },
   components: { mynav, FontAwesomeIcon },
@@ -247,7 +320,7 @@ export default {
     inputLayout: function (val, oldVal) {
       if (this.ignoreWatch) return
 
-      this.directions = val === 'lr' ? this.lr : this.ns
+      this.directions = val === 'lr' ? this.lr.slice(0) : this.ns.slice(0) // copy without reference
       this.showDirectionLabels()
     }
   },
@@ -303,6 +376,8 @@ export default {
       this.hideDirectionLabels()
       this.startTrainingTimer()
       this.hideResultText()
+      this.stats = []
+      this.showStats = false
 
       // nächstes Richtungs-Popup anzeigen
       var nextPopUp = function () {
@@ -335,14 +410,13 @@ export default {
             this.hideDirectionLabels()
 
             let lastPopupIdx = this.popupIdx
-            this.popupIdx = Math.floor(Math.random() * this.directions.length)
+            this.popupIdx = this.getRandomPopupIdx()
             // N-/S-Popups und Duplikate (ausser bei 'mixed') eher niedrig halten
             if ([0, 4].includes(this.popupIdx) || (this.inputLayout !== 'mixed' && this.popupIdx === lastPopupIdx)) {
-              this.popupIdx = Math.floor(Math.random() * this.directions.length)
+              this.popupIdx = this.getRandomPopupIdx()
             }
-            console.log('popup: ' + this.directions[this.popupIdx])
 
-            this.setPopupDir(this.directions[this.popupIdx])
+            this.setPopupDir(this.getPopupDirection(this.popupIdx))
             this.reactInTime = true
             this.newPopup = true
             this.popupTime = new Date().getTime()
@@ -356,8 +430,8 @@ export default {
         })
       }.bind(this)
 
-      // Promise-Chain mit aufeinander folgenden Popups aufbauen -> bei Exception ist die Trainingszeit abgelaufen
-      var array = [...Array(Math.floor(this.inputDuration / 2) + 5).keys()] // Länge des Arrays abhängig vom gewählten Zeitfenster machen
+      // Promise-Chain mit aufeinander folgenden Popups aufbauen -> ist die Trainingszeit abgelaufen, wird eine Exception geworfen
+      var array = [...Array(Math.floor(this.inputDuration / 2) + 5).keys()] // Länge des Promise-Arrays abhängig vom gewählten Zeitfenster machen
       console.log('array.length: ' + array.length)
       var promise = nextPopUp()
       array.forEach((number, index) => {
@@ -372,6 +446,7 @@ export default {
             this.showDirectionLabels()
             this.hideTimer()
             this.showResult('', 'black', 'hits: ' + this.getCorrects() + ' / ' + this.stats.length, false)
+            this.showStats = true
           })
         }
       })
@@ -393,6 +468,21 @@ export default {
     stopTraining: function () {
       console.log('>>> stopTraining')
       this.trainingStopFlag = true
+    },
+    getRandomPopupIdx: function () {
+      let idx = Math.floor(Math.random() * this.directions.length)
+      return idx
+    },
+    getPopupDirection: function (idx) {
+      console.log('idx: ' + idx)
+      if (this.inputLayout === 'mixed') {
+        let tmp = [this.ns, this.lr]
+        let mixedDir = tmp[Math.round(Math.random())][idx]
+        this.directions[idx] = mixedDir
+        console.log('mixedDir: ' + mixedDir)
+      }
+      console.log('directions[' + idx + ']: ' + this.directions[idx])
+      return this.directions[idx]
     },
     addStat: function (popup, userInput, resultText, result, reactionTime) {
       this.stats.push({ popup: popup, userInput: userInput, resultText: resultText, result: result, reactionTime: reactionTime })
@@ -439,6 +529,7 @@ export default {
       })
     },
     showHideReactionDirLabel: function (id, color, hide, popupIdx) {
+      console.log('dir-label >>> id: ' + id)
       this.setAttrSvgObject(id, 'visibility', hide ? 'hidden' : 'visible')
       this.setAttrSvgObject(id, 'fill', color)
       this.setTextSvg(id, this.directions[popupIdx])
@@ -501,7 +592,6 @@ export default {
     moveNeedle (toAngle) {
       // console.log(document.getElementById('needle'))
       // document.getElementById('needle').setAttribute('transform', 'rotate(' + (Math.random() * 360) + ',200,200)')
-
       var speed = 300
       var transform = document.getElementById('needle').getAttribute('transform')
       var from = transform.slice(transform.indexOf('(') + 1, transform.indexOf(','))
@@ -515,20 +605,27 @@ export default {
       }
 
       var distance = Math.abs(from - to)
-      var sleepPerDegree = Math.ceil(distance !== 0 ? speed / distance : 50)
+      var sleepPerDegree = Math.ceil(distance !== 0 ? speed / distance : 30)
 
       var distanceRange = helper.getCustomListRange(from, to)
 
+      // Nadel 'ausschwingen' lassen
+      let fromSwingOut = Math.max(2, Math.ceil(distance / 40))
+      let swingOut = helper.getCustomListRange(fromSwingOut, 0)
+      swingOut.forEach(n => {
+        distanceRange.push(toAngle + n * 3)
+        distanceRange.push(toAngle - n * 3)
+      })
+
       // console.log('from: ' + from + ' - to: ' + to)
-      console.log('distanceRange >>> from: ' + distanceRange[0] + ' - to: ' + distanceRange[distanceRange.length - 1])
+      console.log('distanceRange : ' + distanceRange)
       console.log('distance: ' + distance)
       console.log('sleepPerDegree: ' + sleepPerDegree)
 
       let counter = 0
-
       function* pos () {
         while (counter < distanceRange.length - 1) {
-          yield distanceRange[counter += 2]
+          yield counter <= distance ? distanceRange[counter += 2] : distanceRange[counter += 1]
         }
 
         clearInterval(interval)
@@ -570,18 +667,48 @@ export default {
       */
     },
     show: function () {
-      // this.$modal.show('login')
-      // $('#loginModal').modal('show')
       $('#settingsModal').modal('show')
     },
     hide: function () {
-      // this.$modal.hide('login')
       $('#settingsModal').modal('hide')
+    },
+    showStatistics: function () {
+      $('#statsModal').modal('show')
+    },
+    hideStatistics: function () {
+      $('#statsModal').modal('hide')
     }
   },
   mounted () {
     this.show()
-    this.directions = this.ns
+    this.directions = this.ns.slice(0) // copy without reference
+
+    // DEBUG
+    this.addStat(this.directions[3], 'NE', 'hmmm', 1, 700)
+    this.addStat(this.directions[6], 'SE', 'hmmm', 2, 1700)
+    this.addStat(this.directions[2], 'N', 'hmmm', 3, 500)
+    this.addStat(this.directions[7], 'E', 'hmmm', 4, 720)
+    this.addStat(this.directions[0], 'SW', 'hmmm', 3, 130)
+    this.addStat(this.directions[1], 'NE', 'hmmm', 2, 987)
+    this.addStat(this.directions[3], 'NE', 'hmmm', 1, 700)
+    this.addStat(this.directions[6], 'SE', 'hmmm', 2, 1700)
+    this.addStat(this.directions[2], 'N', 'hmmm', 3, 500)
+    this.addStat(this.directions[7], 'E', 'hmmm', 4, 720)
+    this.addStat(this.directions[0], 'SW', 'hmmm', 3, 130)
+    this.addStat(this.directions[1], 'NE', 'hmmm', 2, 987)
+    this.addStat(this.directions[3], 'NE', 'hmmm', 1, 700)
+    this.addStat(this.directions[6], 'SE', 'hmmm', 2, 1700)
+    this.addStat(this.directions[2], 'N', 'hmmm', 3, 500)
+    this.addStat(this.directions[7], 'E', 'hmmm', 4, 720)
+    this.addStat(this.directions[0], 'SW', 'hmmm', 3, 130)
+    this.addStat(this.directions[1], 'NE', 'hmmm', 2, 987)
+    this.addStat(this.directions[3], 'NE', 'hmmm', 1, 700)
+    this.addStat(this.directions[6], 'SE', 'hmmm', 2, 1700)
+    this.addStat(this.directions[2], 'N', 'hmmm', 3, 500)
+    this.addStat(this.directions[7], 'E', 'hmmm', 4, 720)
+    this.addStat(this.directions[0], 'SW', 'hmmm', 3, 130)
+    this.addStat(this.directions[1], 'NE', 'hmmm', 2, 987)
+    // DEBUG ENDE
 
     // Listen to the event.
     EventBus.$on('kompass-key-event', keyName => {
@@ -669,5 +796,30 @@ div.duration {
   position: absolute;
   bottom: 10px;
   width: 80%;
+}
+
+.buttons {
+  float: left;
+  margin-left: 10px;
+}
+
+.statSection {
+  background: #f2f2f2;
+  border-radius: 1em;
+  width: 700px;
+  height: 500px;
+  padding: 10px;
+}
+.closeStat {
+  position: absolute;
+  right: 3%;
+  top: 2%;
+}
+.table-responsive {
+  overflow-y: scroll;
+  height: 400px;
+}
+.modal-dialog-stat {
+  max-width: 550px;
 }
 </style>
