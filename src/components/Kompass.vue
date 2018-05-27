@@ -605,66 +605,61 @@ export default {
       }
 
       var distance = Math.abs(from - to)
-      var sleepPerDegree = Math.ceil(distance !== 0 ? speed / distance : 30)
+      var sleepPerDegree = Math.ceil(distance !== 0 ? speed / distance : 50)
 
       var distanceRange = helper.getCustomListRange(from, to)
 
-      // Nadel 'ausschwingen' lassen
-      let fromSwingOut = Math.max(2, Math.ceil(distance / 40))
-      let swingOut = helper.getCustomListRange(fromSwingOut, 0)
-      swingOut.forEach(n => {
-        distanceRange.push(toAngle + n * 3)
-        distanceRange.push(toAngle - n * 3)
-      })
-
-      // console.log('from: ' + from + ' - to: ' + to)
-      console.log('distanceRange : ' + distanceRange)
       console.log('distance: ' + distance)
       console.log('sleepPerDegree: ' + sleepPerDegree)
 
-      let counter = 0
-      function* pos () {
-        while (counter < distanceRange.length - 1) {
-          yield counter <= distance ? distanceRange[counter += 2] : distanceRange[counter += 1]
-        }
+      var move = function (rangeList, sleep, jumper = 1) {
+        return new Promise((resolve, reject) => {
+          let counter = 0
+          function* pos () {
+            while (counter < rangeList.length - 1) {
+              yield rangeList[counter += jumper]
+            }
 
-        clearInterval(interval)
-        console.log('toAngle: ' + toAngle)
-        yield toAngle
-        // document.getElementById('needle').setAttribute('transform', 'rotate(' + toAngle + ',200,200)')
-      }
+            clearInterval(interval)
+            console.log('toAngle: ' + toAngle)
+            resolve(toAngle)
+            yield toAngle
+            // document.getElementById('needle').setAttribute('transform', 'rotate(' + toAngle + ',200,200)')
+          }
 
-      let posGen = pos()
-      let hash = ++this.animationStopFlag
-      console.log('animationStopFlag >>> ' + this.animationStopFlag)
+          let posGen = pos()
+          let hash = ++this.animationStopFlag
+          console.log('animationStopFlag >>> ' + this.animationStopFlag)
 
-      var interval = setInterval(() => {
-        // check stop flag
-        if (hash !== this.animationStopFlag) clearInterval(interval)
-        // console.log('position: ' + position)
-        let nextPos = posGen.next().value
-        // console.log('nextPos: ' + nextPos)
-        if (nextPos === undefined) {
-          clearInterval(interval)
-          this.setAttrSvgObject('needle', 'transform', 'rotate(' + toAngle + ',200,200)')
-        } else {
-          this.setAttrSvgObject('needle', 'transform', 'rotate(' + nextPos + ',200,200)')
-          this.setAttrSvgObject('needle', 'angle', String.valueOf(nextPos))
-        }
-      }, sleepPerDegree)
+          var interval = setInterval(() => {
+            // check stop flag
+            if (hash !== this.animationStopFlag) clearInterval(interval)
+            // console.log('position: ' + position)
+            let nextPos = posGen.next().value
+            // console.log('nextPos: ' + nextPos)
+            if (nextPos === undefined) {
+              clearInterval(interval)
+              resolve(toAngle)
+              this.setAttrSvgObject('needle', 'transform', 'rotate(' + toAngle + ',200,200)')
+            } else {
+              this.setAttrSvgObject('needle', 'transform', 'rotate(' + nextPos + ',200,200)')
+              this.setAttrSvgObject('needle', 'angle', String.valueOf(nextPos))
+            }
+          }, sleep)
+        })
+      }.bind(this)
 
-      /*
-      for (var position in distanceRange) {
-        if (counter++ > distance) sleepPerDegree = 50 // 'Ausschwingen' hat festen 'speed' (sieht damit immer gleich aus)
-        try {
-            console.log('position: ' + position)
-            document.getElementById('needle').setAttribute('transform', 'rotate(' + position + ',200,200)')
-            document.getElementById('needle').setAttribute('angle', String.valueOf(position))
-        } catch (e) {
-          console.log(e)
-        }
-      }
-      */
+      // Nadel 'ausschwingen' lassen
+      let fromSwingOut = Math.max(2, Math.ceil(distance / 40))
+      if (fromSwingOut <= 2) fromSwingOut = 3
+      let swingOut = helper.getCustomListRange(fromSwingOut, 0)
+      let swingOutRange = []
+      swingOut.forEach(n => {
+        swingOutRange.push(toAngle + n * 2)
+        swingOutRange.push(toAngle - n * 2)
+      })
+      // Animation starten
+      move(distanceRange, sleepPerDegree, 2).then(toAngle => move(swingOutRange, 50))
     },
     show: function () {
       $('#settingsModal').modal('show')
