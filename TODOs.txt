@@ -1,0 +1,5 @@
+TODOs
+-----
+- E statistik und endergebnis anzeigen
+- statistik übersicht im modalen dialog anzeigbar machen
+- mixed/random Directions

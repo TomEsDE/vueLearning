@@ -2,7 +2,9 @@
   <div>
 	  <mynav ref="nav" :showTwitch="true"/>
 
-    <button class="btn btn-lg btn-danger btn-block" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))"><h3>{{ buttonNeedleText }}</h3></button>
+    <button class="btn btn-lg btn-danger btn-block" :disabled="trainingStarted" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))"><h3>{{ buttonNeedleText }}</h3></button>
+    <button v-if="trainingStarted" class="btn btn-lg btn-danger btn-block" v-on:click="stopTraining()"><h3>Stop Training</h3></button>
+    <button v-else class="btn btn-lg btn-danger btn-block" v-on:click="show()"><h3>Settings</h3></button>
     <br />
     
     <!-- Modal -->
@@ -216,13 +218,15 @@ export default {
       trainingStarted: false,
       reactInTime: false,
       newPopup: false,
-      startCounterFrom: 3,
+      popupIdx: -1,
+      popupTime: 0,
+      startCounterFrom: 1,
       buttonNeedleText: 'Kompass ausrichten',
       animationStopFlag: 0,
       trainingStopFlag: 0,
       defaultErrorText: 'Bitte geben Sie Daten ein',
       selectDiff: 1500,
-      inputDuration: 10,
+      inputDuration: 30,
       inputDurationError: false,
       inputDurationErrorText: this.defaultErrorText,
       inputDurationBorderClass: '',
@@ -234,7 +238,8 @@ export default {
       ],
       ns: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
       lr: ['Oben', 'RO', 'R', 'RU', 'Unten', 'LU', 'L', 'LO'],
-      directions: []
+      directions: [],
+      stats: []
     }
   },
   components: { mynav, FontAwesomeIcon },
@@ -249,12 +254,17 @@ export default {
   methods: {
     onSubmit: function () {
       console.log('form submitted')
+      this.trainingStarted = true
+      this.trainingStopFlag = false
+      this.moveNeedle(0)
+
       this.startCounter().then(x => this.startTraining())
+      // this.hide()
+      // this.startTraining()
     },
     startCounter: function () {
       this.hide()
       console.log('settings >>> diff: ' + this.selectDiff + ' - duration: ' + this.inputDuration + ' - Layout: ' + this.inputLayout)
-      this.trainingStarted = true
 
       var show = function (number, sleep = 700) {
         return new Promise(resolve => {
@@ -292,9 +302,25 @@ export default {
       console.log('start Training!')
       this.hideDirectionLabels()
       this.startTrainingTimer()
+      this.hideResultText()
 
       // nächstes Richtungs-Popup anzeigen
       var nextPopUp = function () {
+        // falls zu langsam reagiert wird
+        setTimeout(() => {
+          console.log('this.newPopup ... ' + this.newPopup)
+          if (this.newPopup) {
+            console.log('too slow reaction ...')
+            let reactionTime = -1
+            let color = 'red'
+            let resultText = 'too slow'
+            let reactionResult = 4
+            this.showResult('', color, resultText, true)
+            this.addStat(this.directions[this.popupIdx], '', resultText, reactionResult, reactionTime) // TODO reactionResult
+            this.newPopup = false
+          }
+        }, 1000)
+        // neues Popup Promise
         return new Promise((resolve, reject) => {
           console.log('nextPopUp promise')
 
@@ -308,12 +334,18 @@ export default {
             }
             this.hideDirectionLabels()
 
-            let popupIdx = Math.floor(Math.random() * this.directions.length)
-            console.log('popup: ' + this.directions[popupIdx])
+            let lastPopupIdx = this.popupIdx
+            this.popupIdx = Math.floor(Math.random() * this.directions.length)
+            // N-/S-Popups und Duplikate (ausser bei 'mixed') eher niedrig halten
+            if ([0, 4].includes(this.popupIdx) || (this.inputLayout !== 'mixed' && this.popupIdx === lastPopupIdx)) {
+              this.popupIdx = Math.floor(Math.random() * this.directions.length)
+            }
+            console.log('popup: ' + this.directions[this.popupIdx])
 
-            this.setPopupDir(this.directions[popupIdx])
+            this.setPopupDir(this.directions[this.popupIdx])
             this.reactInTime = true
             this.newPopup = true
+            this.popupTime = new Date().getTime()
 
             setTimeout(() => {
               this.reactInTime = false
@@ -336,7 +368,10 @@ export default {
           promise = promise.catch(e => {
             console.log(e.message)
 
+            this.trainingStarted = false
             this.showDirectionLabels()
+            this.hideTimer()
+            this.showResult('', 'black', 'hits: ' + this.getCorrects() + ' / ' + this.stats.length, false)
           })
         }
       })
@@ -345,14 +380,30 @@ export default {
       let duration = this.inputDuration
       var interval = setInterval(() => {
         if (this.trainingStopFlag || duration <= 0) {
-          clearInterval(interval)
-          this.trainingStarted = false
+          // this.trainingStarted = false
           this.trainingStopFlag = true
+          clearInterval(interval)
+          return
         }
 
         this.showTimer(duration + 's', 'black')
         duration -= 1
       }, 1000)
+    },
+    stopTraining: function () {
+      console.log('>>> stopTraining')
+      this.trainingStopFlag = true
+    },
+    addStat: function (popup, userInput, resultText, result, reactionTime) {
+      this.stats.push({ popup: popup, userInput: userInput, resultText: resultText, result: result, reactionTime: reactionTime })
+    },
+    getCorrects: function () {
+      let corrects = 0
+      this.stats.forEach(stat => {
+        if (stat.result === 1) corrects++
+      })
+
+      return corrects
     },
     delay: function (t, v) {
       return new Promise(resolve => setTimeout(resolve.bind(null, v), t))
@@ -386,6 +437,11 @@ export default {
         this.setAttrSvgObject('txt_' + dir, 'fill', 'black')
         this.setTextSvg('txt_' + dir, this.directions[index])
       })
+    },
+    showHideReactionDirLabel: function (id, color, hide, popupIdx) {
+      this.setAttrSvgObject(id, 'visibility', hide ? 'hidden' : 'visible')
+      this.setAttrSvgObject(id, 'fill', color)
+      this.setTextSvg(id, this.directions[popupIdx])
     },
     setPopupCounter: function (text) {
       console.log('setPopupCounter')
@@ -429,13 +485,13 @@ export default {
     },
     showResult: function (reactionTime, color, text, fadeOut) {
       // richtige Richtung (N, NW...) anzeigen, Korrektheit farblich abgestimmt
-      // this.showHideReactionDirLabel('txt_' + directionLists.valueNS(popupIdx), color, false, popupIdx);
+      this.showHideReactionDirLabel('txt_' + this.ns[this.popupIdx], color, false, this.popupIdx)
       this.showResultText(text, reactionTime, color)
 
       if (fadeOut) {
         setTimeout(() => {
           if (this.trainingStarted) {
-            // this.showHideReactionDirLabel('txt_' + directionLists.valueNS(popupIdx), 'black', true, popupIdx);
+            this.showHideReactionDirLabel('txt_' + this.ns[this.popupIdx], 'black', true, this.popupIdx)
             this.hideResultText()
           }
         }, 1000)
@@ -472,7 +528,7 @@ export default {
 
       function* pos () {
         while (counter < distanceRange.length - 1) {
-          yield distanceRange[counter++]
+          yield distanceRange[counter += 2]
         }
 
         clearInterval(interval)
@@ -530,22 +586,54 @@ export default {
     // Listen to the event.
     EventBus.$on('kompass-key-event', keyName => {
       var directionKeys = ['8', '9', '6', '3', '2', '1', '4', '7']
-      var toAngle = directionKeys.indexOf(keyName) * 45
-      console.log('toAngle: ' + toAngle)
+      let keyEventIdx = directionKeys.indexOf(keyName)
+      var toAngle = keyEventIdx * 45
+      // console.log('toAngle: ' + toAngle)
       if (!this.trainingStarted) {
         this.moveNeedle(toAngle)
       }
 
       if (this.trainingStarted) {
+        let reactionTime = new Date().getTime() - this.popupTime
+        let color = 'black'
+        let resultText = 'text'
+        let reactionResult = -1
         if (this.reactInTime) {
           this.moveNeedle(toAngle)
           // auswerten ob richtig reagiert
+          if (keyEventIdx === this.popupIdx) {
+            console.log('correct! >>> reactiontime: ' + reactionTime)
+            color = 'green'
+            resultText = 'good'
+            reactionResult = 1
+          } else {
+            console.log('wrong :( >>> reactiontime: ' + reactionTime)
+            color = 'red'
+            resultText = 'wrong'
+            reactionResult = 2
+          }
+          this.showResult(reactionTime + 'ms', color, resultText, true)
+          this.addStat(this.directions[this.popupIdx], this.directions[keyEventIdx], resultText, reactionResult, reactionTime) // TODO reactionResult
+
           this.reactInTime = false // nur eine Eingabe erlaubt nach Popup
           this.newPopup = false
         } else if (this.newPopup) {
+          this.moveNeedle(toAngle)
           // zu langsam...
+          if (keyEventIdx === this.popupIdx) {
+            console.log('too slow! >>> reactiontime: ' + reactionTime)
+            color = 'orange'
+            resultText = 'too slow'
+            reactionResult = 3
+          } else {
+            console.log('wrong & too slow :( >>> reactiontime: ' + reactionTime)
+            color = 'red'
+            resultText = 'too slow'
+            reactionResult = 4
+          }
+          this.showResult(reactionTime + 'ms', color, resultText, true)
+          this.addStat(this.directions[this.popupIdx], this.directions[keyEventIdx], resultText, reactionResult, reactionTime) // TODO reactionResult
           this.newPopup = false
-          this.showResult('', 'red', 'too slow!', true)
         }
       }
     })
