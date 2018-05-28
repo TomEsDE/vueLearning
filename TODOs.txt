@@ -5,3 +5,8 @@ TODOs
 - E mixed/random Directions
 - E nadel 'ausschwingen' lassen
 - E statistik übersicht in scrollpane
+- E Kompass Layout Bootstrap
+- Kompass Stat -> sticky header
+
+
+- SASS implementieren
