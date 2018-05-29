@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+
     <!--
     <modal name="login">
       <h1>{{ msg }}</h1>
@@ -12,8 +12,8 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-body">
-            <div class="container-fluid">              
-              <div class="row" id="pwd-container">                
+            <div class="container-fluid">
+              <div class="row" id="pwd-container">
                 <div class="col-md-12">
                   <!-- User-Section -->
                   <user ref="userComp" :userId="userId" :create="create" :modal="true" @hide="hide" />
@@ -110,7 +110,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped src="../assets/css/form.css">
+<style lang="scss" scoped>
+@import '../assets/scss/test.scss';
 </style>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -130,7 +131,7 @@ over-ride "Weak" message, show font in dark grey
 }
 .progress-bar {
     color: #333;
-} 
+}
 
 /*
 Reference:

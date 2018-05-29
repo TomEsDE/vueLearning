@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+
     <!--
     <modal name="login">
       <h1>{{ msg }}</h1>
@@ -14,17 +14,17 @@
         </button>
         <span v-if="modal && user.id" class="user-id">ID: <span v-text="user.id" /></span>
         <img src="http://i.imgur.com/RcmcLv4.png" class="img-responsive" alt="" />
-        
+
         <div class="input-group form-label-group">
             <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0">
                   <font-awesome-icon icon="envelope" size="lg" />
                 </div>
             </span>
-            
+
             <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control border-left-0 rounded-right ' + inputEmailBorderClass" placeholder="Email address" required autofocus>
-            
-            <label class="inputicon" for="inputEmail">Email address</label>          
+
+            <label class="inputicon" for="inputEmail">Email address</label>
             <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
               <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
             </transition>
@@ -33,7 +33,7 @@
         <!-- <div class="form-label-group">
           <input type="email" v-model="inputEmail" id="inputEmail" v-on:blur="validate('inputEmail', true, true)" :class="'form-control ' + (inputEmailError ? 'red' : '')" placeholder="Email address" required autofocus>
           <label for="inputEmail">Email address</label>
-          
+
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputEmailErrorText" class='form-error alert alert-danger' v-text="inputEmailErrorText"></div>
           </transition>
@@ -47,12 +47,12 @@
             </span>
           <input type="text" v-model="inputUsername" id="inputUsername" v-on:blur="validate('inputUsername', true, true)" :class="'form-control border-left-0 rounded-right ' + inputUsernameBorderClass" placeholder="Email address" required autofocus>
           <label class="inputicon" for="inputUsername">Username</label>
-          
+
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputUsernameErrorText" class='form-error alert alert-danger' v-text="inputUsernameErrorText"></div>
           </transition>
         </div>
-        
+
         <div class="input-group form-label-group">
             <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0 rounded-left">
@@ -66,7 +66,7 @@
             <div v-if="liveValidation && inputPasswordErrorText" class='form-error alert alert-danger' v-text="inputPasswordErrorText"></div>
           </transition>
         </div>
-        
+
         <div class="input-group form-label-group">
             <span class="input-group-prepend">
                 <div class="input-group-text bg-white border-right-0 rounded-left">
@@ -89,14 +89,14 @@
             </span>
           <input type="number" v-model="inputBalance" id="inputBalance" v-on:blur="validate('inputBalance', true, false)" :class="'form-control border-left-0 rounded-right ' + inputBalanceBorderClass" placeholder="Email address" required autofocus>
           <label class="inputicon" for="inputBalance">Balance</label>
-          
+
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputBalanceErrorText" class='form-error alert alert-danger' v-text="inputBalanceErrorText"></div>
           </transition>
         </div>
-        
-        <div class="pwstrength_viewport_progress"></div>                      
-        
+
+        <div class="pwstrength_viewport_progress"></div>
+
         <!--
         <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
         <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
@@ -105,7 +105,7 @@
           <font-awesome-icon icon="save" size="lg" />
           <span v-text="buttonDescription()" />
         </button>
-        
+
       </form>
     </section>
   </div>
@@ -439,6 +439,14 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+@import '../assets/scss/test.scss';
+</style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped src="../assets/css/form.css">
+<style scoped>
+
+.modal-content {
+  background-color: unset;
+  border: none;
+}
 </style>

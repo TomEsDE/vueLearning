@@ -10,6 +10,7 @@ TODOs
 - Sass verwenden (-> responsive stuff)
 
 - moveneedle bugfix
+- user modal background bugfix
 
 
 - E SASS implementieren
