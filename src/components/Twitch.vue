@@ -56,7 +56,7 @@
 
     <paging ref="paging" :dataSize="users.length" :page-size="pageSize" v-on:setPage="onSetPage($event)" />
     </div>
-    
+
     <!-- <div class="container invisible">
       <div class="method">
 
@@ -83,7 +83,7 @@
 
       </div>
     </div> -->
-    
+
     <!--
     <ul v-if="posts && posts.length">
       <li v-for="post of posts">

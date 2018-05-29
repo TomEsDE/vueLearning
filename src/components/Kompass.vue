@@ -123,14 +123,14 @@
         </div>
       </div>
     </div>
-        
+
         <!-- Modal Settings -->
         <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-body">
-                <div class="container-fluid">              
-                  <div class="row" id="pwd-container">                
+                <div class="container-fluid">
+                  <div class="row" id="pwd-container">
                     <div class="col-md-12">
                       <!-- Settings -->
                       <section class="login-form">
@@ -162,7 +162,7 @@
                             <div class="input-group-append">
                               <label class="durationSec input-group-text w-100">s</label>
                             </div>
-                            
+
                             <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
                               <div v-if="inputDurationErrorText" class='form-error alert alert-danger' v-text="inputDurationErrorText"></div>
                             </transition>
@@ -175,7 +175,7 @@
                                                 name="radioInline">
                             </b-form-radio-group>
                           </b-form-group> -->
-                          
+
                           <b-form-group>
                             <b-form-radio-group id="btnradios1"
                                                 buttons
@@ -185,10 +185,10 @@
                                                 name="radiosBtnDefault" />
                           </b-form-group>
                           <br />
-                          
+
                           <button v-on:submit.prevent="onSubmit" id="btnSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">
                             <font-awesome-icon icon="play-circle" size="lg" />
-                            Training starten
+                            <h4 class="d-inline">Training starten</h4>
                           </button>
 
                         </form>
@@ -200,19 +200,19 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Modal Stats -->
         <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog modal-dialog-centered modal-dialog-stat" role="document">
             <div class="modal-content">
               <div class="modal-body">
-                <div class="container-fluid">              
-                  <div class="row" id="pwd-container">                
+                <div class="container-fluid">
+                  <div class="row" id="pwd-container">
                     <div class="col-md-12 statSection">
                       <button type="button" class="close closeStat" aria-label="Close" v-on:click="hideStatistics()">
                         <span aria-hidden="true">&times;</span>
                       </button>
-                      <!-- Settings -->       
+                      <!-- Settings -->
                       <h1>Statistiken</h1>
                       <br />
                       <div class="row">
@@ -223,7 +223,7 @@
                       </div>
                       <br />
                       <div class="table-responsive">
-                        <table class="table table-hover table-sm">
+                        <table data-toggle="table" class="table table-hover table-sm">
                           <thead>
                             <tr>
                               <th scope="col" :class="header[2].align">
@@ -269,7 +269,7 @@
           </div>
         </div>
   </div>
-    
+
 </template>
 
 <script>
@@ -718,6 +718,7 @@ export default {
     this.addStat(this.directions[0], 'SW', 'hmmm', 3, 130)
     this.addStat(this.directions[1], 'NE', 'hmmm', 2, 987)
     // DEBUG ENDE
+    // $('#table').bootstrapTable()
 
     // Listen to the event.
     EventBus.$on('kompass-key-event', keyName => {
@@ -777,6 +778,28 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+@import '../assets/scss/test.scss';
+
+.btn-danger {
+  background-color: $btn-bg-color
+}
+
+// Example: Hide starting at `min-width: 0`, and then show at the `sm` breakpoint
+.buttonblock {
+  display: none;
+}
+@include media-breakpoint-down(sm) {
+  .buttonblock {
+    display: block;
+  }
+
+  div[role=radiogroup] {
+    display: block;
+  }
+}
+</style>
+
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped src="../assets/css/form.css">
 </style>
@@ -784,7 +807,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 form[role=login] {
-  height: 520px;
+  height: 540px;
 }
 
 .form-control {
@@ -836,12 +859,12 @@ div.duration {
 .buttons {
   font-size: 1.2rem;
 }
-@media (max-width: 1200px) { 
+@media (max-width: 1200px) {
   .buttons {
     font-size: 0.9rem;
   }
 }
-@media (max-width: 768px) { 
+@media (max-width: 768px) {
   .buttons {
     font-size: 0.5rem;
   }

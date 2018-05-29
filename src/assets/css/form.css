@@ -56,7 +56,7 @@ form[role=login] div {
 form[role=login] > div {
   text-align: left;
 }
-	
+
 .form-links {
 	text-align: center;
 	margin-top: 1em;
@@ -104,14 +104,14 @@ form[role=login] > div {
   left: 49px;
 }
 /*
-.form-control:focus, 
+.form-control:focus,
 input-group:focus {
   border-color: rgb(110, 162, 187);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(110, 162, 187, 0.6);  
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(110, 162, 187, 0.6);
 }*/
 .red {
   border-color: #FF0000;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);  
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
 }
 .green {
   border-color: rgb(67, 211, 144);
@@ -127,15 +127,15 @@ input-group:focus {
   border-style: dotted;
   border-color: rgb(223, 124, 124)
 }
-.form-error:before {  
-  content: ' ';  
-  position: absolute;  
-  width: 0;  
-  height: 0;  
-  left: 30px;  
-  top: -10px;  
+.form-error:before {
+  content: ' ';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 30px;
+  top: -10px;
   border: 5px solid;
-  border-color:  transparent transparent rgb(223, 124, 124) transparent;  
+  border-color:  transparent transparent rgb(223, 124, 124) transparent;
 }
 
 .form-label-group input::-webkit-input-placeholder {

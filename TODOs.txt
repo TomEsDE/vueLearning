@@ -6,7 +6,16 @@ TODOs
 - E nadel 'ausschwingen' lassen
 - E statistik übersicht in scrollpane
 - E Kompass Layout Bootstrap
-- Kompass Stat -> sticky header
+- Kompass Stats -> sticky header
+- Sass verwenden (-> responsive stuff)
+
+- moveneedle bugfix
 
 
-- SASS implementieren
+- E SASS implementieren
+
+
+Docs
+-----
+ - Sass integrieren !! sass-loader in webpack.base.conf
+ - bootstrap-table integrieren -> jQuery Plugin Setting necessary in webpack.dev/prod.conf !!!

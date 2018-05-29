@@ -2,16 +2,28 @@
   <div>
 	  <mynav ref="nav" :showTwitch="true"/>
     <h1>{{ msg }}</h1>
-    <button class="btn btn-primary" v-on:click="deleteJwt">delete jwt</button>
-    <button class="btn btn-primary" v-on:click="createGlobalMessage">create global Message</button>
-    
-    <button class="btn btn-primary" v-on:click="createUser">create New User</button>
-    <button class="btn btn-primary" v-on:click="editUser">edit User {{userId}}</button>
-    <!-- <user ref="userDlg" :userId="userId" :create="createNewUser" /> -->
-    
-    <user2 ref="userComp2" :userId="userId" :create="create" :modal="false" />
+    <div class="d-inline">
+      <button class="btn btn-primary btn-inline" v-on:click="deleteJwt">delete jwt</button>
+      <button class="btn btn-primary btn-inline" v-on:click="createGlobalMessage">create global Message</button>
+
+      <button class="btn btn-primary btn-inline" v-on:click="createUser">create New User</button>
+      <button class="btn btn-primary btn-inline" v-on:click="editUser">edit User {{userId}}</button>
+    </div>
+
+    <user ref="userDlg" :userId="userId" :create="createNewUser" />
+    <!-- <user2 ref="userComp2" :userId="userId" :create="create" :modal="false" /> -->
+
+    <table id="table" data-pagination="true" data-search="true" data-toggle="table" data-url="http://jsonplaceholder.typicode.com/posts">
+      <thead>
+          <tr>
+              <th data-sortable="true" data-field="id">Item ID</th>
+              <th data-field="title">title</th>
+              <th data-field="body">Text</th>
+          </tr>
+      </thead>
+    </table>
   </div>
-    
+
 </template>
 
 <script>
@@ -20,7 +32,7 @@ import user from './UserModal.vue'
 import user2 from './User.vue'
 import { EventBus } from '../event-bus.js'
 import jscookie from 'js-cookie'
-// import $ from 'jquery'
+import $ from 'jquery'
 
 var message = 'Ciao du Dödeli'
 export default {
@@ -62,6 +74,7 @@ export default {
     }
   },
   mounted () {
+    $('#table').bootstrapTable()
     // this.show()
   }
 }
