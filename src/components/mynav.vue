@@ -28,6 +28,7 @@ export default {
         { url: '/ciao', desc: 'Ciao' },
         // { url: '/login', desc: 'Login' },
         { url: '/compass', desc: 'Kompass' },
+        { url: '/company', desc: 'company' },
         { url: '/test', desc: 'Test' }
       ]
     }
@@ -88,7 +89,7 @@ ol ol {
 .rounded-list a:before{
     content: counter(li);
     counter-increment: li;
-    position: absolute; 
+    position: absolute;
     left: -1.3em;
     top: 50%;
     margin-top: -1.3em;

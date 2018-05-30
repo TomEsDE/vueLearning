@@ -117,6 +117,7 @@ import $ from 'jquery'
 import axios from 'axios'
 import jscookie from 'js-cookie'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
+import 'zxcvbn/dist/zxcvbn.js'
 
 var message = 'Login'
 export default {

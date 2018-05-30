@@ -150,6 +150,7 @@ document.addEventListener('keyup', (event) => {
 }, false)
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .errors {
   position: fixed;
@@ -193,6 +194,7 @@ document.addEventListener('keyup', (event) => {
 
 body {
   margin: 0;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   /*
 	background: url(http://i.imgur.com/GHr12sH.jpg) no-repeat center center fixed;
     -webkit-background-size: cover;
@@ -203,7 +205,7 @@ body {
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  /* font-family: 'Avenir', Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -211,7 +213,7 @@ body {
 
 main {
   text-align: center;
-  margin-top: 40px;
+  /* margin-top: 40px; */
 }
 
 header {

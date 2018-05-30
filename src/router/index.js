@@ -8,6 +8,7 @@ import oauth from '@/components/oauth'
 import Kompass from '@/components/Kompass'
 import User from '@/components/User'
 import Test from '@/components/Test'
+import Company from '@/components/Company'
 import { EventBus } from '../event-bus.js'
 
 Vue.use(Router)
@@ -48,6 +49,11 @@ var router = new Router({
       path: '/user',
       name: 'user',
       component: User
+    },
+    {
+      path: '/company',
+      name: 'company',
+      component: Company
     },
     {
       path: '/test',

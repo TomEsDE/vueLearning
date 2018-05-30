@@ -81,5 +81,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
+
+
+main {
+  text-align: center;
+  margin-top: 40px;
+}
 </style>

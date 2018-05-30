@@ -7,13 +7,17 @@ TODOs
 - E statistik übersicht in scrollpane
 - E Kompass Layout Bootstrap
 - Kompass Stats -> sticky header
-- Sass verwenden (-> responsive stuff)
+- E Sass verwenden (-> responsive stuff)
 
-- moveneedle bugfix
-- user modal background bugfix
+- ?E jetzt klappt es wieder -> beobachten !! moveneedle bugfix
+- E user modal background bugfix
 
 
 - E SASS implementieren
+- Google Map einbinden
+- delayed scroll
+- scrollspy
+- password strength meter
 
 
 Docs

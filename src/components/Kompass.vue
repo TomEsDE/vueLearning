@@ -246,13 +246,13 @@
                                 <span v-text="stat.userInput"></span>
                               </td>
                               <td :class="header[2].align" :data-title="header[2].desc">
-                                <font-awesome-icon v-if="stat.result === 1" icon="check" size="lg" />
+                                <font-awesome-icon class="text-success" v-if="stat.result === 1" icon="check" size="lg" />
                               </td>
                               <td :class="header[3].align" :data-title="header[3].desc">
-                                <font-awesome-icon v-if="stat.result === 2 || stat.result === 4" icon="check" size="lg" />
+                                <font-awesome-icon class="text-danger" v-if="stat.result === 2 || stat.result === 4" icon="check" size="lg" />
                               </td>
                               <td :class="header[4].align" :data-title="header[4].desc">
-                                <font-awesome-icon v-if="stat.result === 3 || stat.result === 4" icon="check" size="lg" />
+                                <font-awesome-icon class="text-warning" v-if="stat.result === 3 || stat.result === 4" icon="check" size="lg" />
                               </td>
                               <td :class="header[5].align" :data-title="header[5].desc">
                                 <span v-text="stat.reactionTime + ' ms'"></span>
