@@ -6,10 +6,12 @@
 
     <br />
     <br />
+    <button v-on:click="reloadUsers"><h5>Liste neu laden</h5></button>
     <br />
-    <paging ref="paging" :dataSize="users.length" :page-size="pageSize" v-on:setPage="onSetPage($event)" />
+    <br />
+    <paging ref="paging" :dataSize="usersStore.length" :page-size="pageSize" v-on:setPage="onSetPage($event)" />
 
-    <div v-show="users.length > 0" class="container">
+    <div v-show="usersStore.length > 0" class="container">
     <div class="table-responsive">
     <table class="table table-hover table-sm">
       <thead>
@@ -54,7 +56,7 @@
     </table>
     </div>
 
-    <paging ref="paging" :dataSize="users.length" :page-size="pageSize" v-on:setPage="onSetPage($event)" />
+    <paging ref="paging" :dataSize="usersStore.length" :page-size="pageSize" v-on:setPage="onSetPage($event)" />
     </div>
 
     <!-- <div class="container invisible">
@@ -107,7 +109,7 @@ import { EventBus } from '../event-bus.js'
 import mynav from './mynav.vue'
 import user from './UserModal.vue'
 import paging from './table-pagination.vue'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import axios from 'axios'
 import $ from 'jquery'
 // import PerfectScrollbar from 'perfect-scrollbar'
@@ -127,7 +129,7 @@ export default {
         {desc: 'Email', data: 'email', type: 'char', colsize: 3, align: 'text-left'},
         {desc: 'Balance', data: 'account.balance', type: 'number', colsize: 1, align: 'text-right'},
         {desc: 'registriert seit', data: 'createTime', type: 'number', colsize: 5, align: 'text-left'}],
-      users: [],
+      // users: [],
       usersPage: [],
       pageSize: 15,
       errors: []
@@ -138,30 +140,35 @@ export default {
     ...mapState({
       // arrow functions can make the code very succinct!
       count: state => state.count,
-
       // passing the string value 'count' is same as `state => state.count`
       countAlias: 'count',
-
-      // to access local state with `this`, a normal function must be used
-      countPlusLocalState (state) {
-        return state.count + this.localCount
-      }
+      usersStore: state => state.users,
+      activePage: 'activePage'
     })
   },
   methods: {
+    ...mapActions({
+      setUsers: 'setUsers', // map `this.setUsers()` to `this.$store.dispatch('setUsers')`
+      setActivePage: 'setActivePage' // map `this.setUsers()` to `this.$store.dispatch('setUsers')`
+    }),
     // a computed getter
     formatTime: function (timestamp) {
       // `this` points to the vm instance
       return new Date(timestamp).toUTCString()
     },
-    test () {
+    test: function () {
       axios.get('http://jsonplaceholder.typicode.com/posts').then(resp => {
         this.posts = resp.data
       }).catch(e => this.errors.push)
     },
-    onEditUser (userId) {
+    onEditUser: function (userId) {
       this.$refs.userDlg.setData(false, userId)
       this.show()
+    },
+    reloadUsers: function () {
+      this.setUsers([])
+      // this.usersPage = []
+      this.getuserAll(true)
     },
     getuserAll: function (init) {
       let token = jscookie.get('jwt')
@@ -172,7 +179,7 @@ export default {
           // 'test': 'test-1'
         }
       }).then(resp => {
-        this.users = resp.data
+        let users = resp.data
         var list = [...Array(10).keys()]
         var counter = 100
         list.forEach(i => {
@@ -180,12 +187,14 @@ export default {
             let userCopy = $.extend(true, {}, element)
             userCopy.id = counter++
             // console.log('id: ' + userCopy.id)
-            this.users.push(userCopy)
+            users.push(userCopy)
           })
         })
+        // users in den store packen
+        this.setUsers(users)
 
-        if (init && this.users.length > 0) {
-          this.onSetPage(0)
+        if (init && users.length > 0) {
+          this.$refs.paging.setPage(0)
         }
       }).catch(e => {
         console.log(e)
@@ -202,8 +211,8 @@ export default {
       let nestedKey = this.header[col].data
       let type = this.header[col].type
       // console.log(nestedKey)
-      // console.log('users.length: ' + this.users.length)
-      this.users.sort(function (a, b) {
+      // console.log('users.length: ' + this.usersStore.length)
+      this.usersStore.sort(function (a, b) {
         // console.log(t(a, nestedKey).safeObject)
         var nameA = t(a, nestedKey).safeObject
         var nameB = t(b, nestedKey).safeObject
@@ -229,8 +238,9 @@ export default {
     onSetPage: function (page) {
       let from = page * this.pageSize
       console.log('from: ' + from)
-      console.log('users.length: ' + this.users.length)
-      this.usersPage = this.users.slice(from, from + this.pageSize)
+      console.log('users.length: ' + this.usersStore.length)
+      this.usersPage = this.usersStore.slice(from, from + this.pageSize)
+      this.setActivePage(page)
       // console.log('usersPage.length: ' + this.usersPage.length)
     },
     loginTwitch () {
@@ -251,8 +261,9 @@ export default {
     // this.getuser(11)
   },
   mounted () {
-    this.getuserAll(true)
-    console.log('count: ' + $('#count').text())
+    if (this.usersStore.length === 0) this.getuserAll(true)
+    else this.$refs.paging.setPage(this.activePage)
+    console.log('usersStore.length: ' + this.usersStore.length)
 
     // EventBus.$emit('global-error', { msg: 'test-error', type: 'error', sticky: false })
     /*

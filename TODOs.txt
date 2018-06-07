@@ -8,19 +8,27 @@ TODOs
 - E Kompass Layout Bootstrap
 - Kompass Stats -> sticky header
 - E Sass verwenden (-> responsive stuff)
+- E SASS implementieren
 
-- ?E jetzt klappt es wieder -> beobachten !! moveneedle bugfix
+- ?E jetzt klappt es wieder -> beobachten !! moveneedle bugfix (vimium-erweiterung abschalten!)
 - E user modal background bugfix
 
-
-- E SASS implementieren
-- Google Map einbinden
-- delayed scroll
-- scrollspy
-- password strength meter
+- E Google Map einbinden
+- Google Api node einbinden (statt global import in index.html)
+- E password strength meter
+- E BUG user id & close style + posi
+- E disabled password-confirm
+- P delayed scroll
+- E scrollspy
 
 
 Docs
 -----
  - Sass integrieren !! sass-loader in webpack.base.conf
  - bootstrap-table integrieren -> jQuery Plugin Setting necessary in webpack.dev/prod.conf !!!
+ - fira code TTF in visual code verwenden >= -> https://github.com/tonsky/FiraCode
+  - installation mit chocolatey
+ - visual studio konfigurieren
+  - fira code
+  - formatting (-> für vue files -> prettier-config)
+ - Globale libs erlauben und ohne Validation-Errors verwenden (wie google-maps in index.html eingebunden) => /* global google */

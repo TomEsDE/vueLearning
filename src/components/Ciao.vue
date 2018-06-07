@@ -2,6 +2,7 @@
   <div>
 	  <mynav ref="nav" :showTwitch="true"/>
     <h1>{{ msg }}</h1>
+
     <div class="d-inline">
       <button class="btn btn-primary btn-inline" v-on:click="deleteJwt">delete jwt</button>
       <button class="btn btn-primary btn-inline" v-on:click="createGlobalMessage">create global Message</button>
@@ -82,10 +83,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
-
-main {
-  text-align: center;
-  margin-top: 40px;
-}
 </style>

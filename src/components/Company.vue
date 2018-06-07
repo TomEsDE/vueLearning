@@ -1,6 +1,25 @@
 <template>
-  <div name="company">
-    <div class="jumbotron text-center">
+  <div id="company" name="company">
+    <nav id="navbar-scrollspy" class="navbar navbar-expand-sm navbar-light sticky-top p-0">
+      <a class="navbar-brand" href="#">Logo</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto mr-0 ml-0">
+          <li class="nav-item">
+            <a class="nav-link" href="#about">ABOUT</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#services">SERVICES</a></li>
+          <li class="nav-item"><a class="nav-link" href="#portfolio">PORTFOLIO</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pricing">PRICING</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">CONTACT</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="jumbotron rounded-0 text-center">
       <h1 class="display-4">Company</h1>
       <p class="lead">We specialize in blablabla</p>
       <form class="form-inline justify-content-center">
@@ -13,7 +32,7 @@
       </form>
     </div>
 
-    <div class="container-fluid text-left">
+    <div id="about" class="container-fluid text-left">
       <div class="row">
         <div class="col-sm-8">
           <h2>About Company Page</h2>
@@ -40,7 +59,7 @@
       </div>
     </div>
 
-    <div class="container-fluid text-center">
+    <div id="services" class="container-fluid text-center">
       <h2>SERVICES</h2>
       <h4>What we offer</h4>
       <br>
@@ -81,31 +100,27 @@
       </div>
     </div>
 
-    <div class="container-fluid text-center bg-grey">
+    <div id="portfolio" class="container-fluid text-center bg-grey">
       <h2>Portfolio</h2>
       <h4>What we have created</h4>
       <div class="row text-center slideanim">
         <div class="col-sm-4">
           <div class="thumbnail">
-            <!-- <img src="paris.jpg" alt="Paris"> -->
-            <font-awesome-layers class="fa-lg">
-              <font-awesome-icon icon="circle" />
-              <font-awesome-icon icon="check" transform="shrink-6" style="color: white;" />
-            </font-awesome-layers>
+            <img src="../assets/img/paris.jpg" alt="Paris">
             <p><strong>Paris</strong></p>
             <p>Yes, we built Paris</p>
           </div>
         </div>
         <div class="col-sm-4">
           <div class="thumbnail">
-            <img src="newyork.jpg" alt="New York">
+            <img src="../assets/img/new-york.jpg" alt="New York">
             <p><strong>New York</strong></p>
             <p>We built New York</p>
           </div>
         </div>
         <div class="col-sm-4">
           <div class="thumbnail">
-            <img src="sanfran.jpg" alt="San Francisco">
+            <img src="../assets/img/sanfran.jpg" alt="San Francisco">
             <p><strong>San Francisco</strong></p>
             <p>Yes, San Fran is ours</p>
           </div>
@@ -144,7 +159,7 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div id="pricing" class="container-fluid">
       <div class="text-center">
         <h2>Pricing</h2>
         <h4>Choose a payment plan that works for you</h4>
@@ -210,7 +225,7 @@
       </div>
     </div>
 
-    <div class="container-fluid bg-grey">
+    <div id="contact" class="container-fluid bg-grey">
       <div class="row">
         <div class="col-sm-5 slideanim text-left">
           <h2 class="d-block d-sm-none">CONTACT</h2>
@@ -240,24 +255,23 @@
       </div>
     </div>
     <!-- Add Google Maps -->
-    <div id="googleMap" style="height:400px;width:100%;"></div>
-    <!-- <script>
-    function myMap() {
-    var myCenter = new google.maps.LatLng(41.878114, -87.629798);
-    var mapProp = {center:myCenter, zoom:12, scrollwheel:false, draggable:false, mapTypeId:google.maps.MapTypeId.ROADMAP};
-    var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-    var marker = new google.maps.Marker({position:myCenter});
-    marker.setMap(map);
-    }
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU&callback=myMap"></script> -->
+    <div id="googleMap" class="google-map slideanim"></div>
 
-  </div>
+    <!-- footer -->
+    <footer class="container-fluid text-center">
+      <a href="#company" title="To Top">
+         <font-awesome-icon class="fontawesome" icon="chevron-up" size="lg" />
+      </a>
+      <p>Bootstrap Theme Made By <a href="https://www.w3schools.com" title="Visit w3schools">www.w3schools.com</a></p>
+    </footer>
+    </div>
 </template>
 
 <script>
+/* global google */
 // import _ from 'lodash'
 import mynav from './mynav.vue'
+import { EventBus } from '../event-bus.js'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import $ from 'jquery'
 
@@ -273,7 +287,11 @@ export default {
         { skill: 'Middleware Developer' },
         { skill: 'VAC Developer' }
       ],
-      items: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      items: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      deltaY: 0,
+      currentActiveSection: '#about',
+      navLinkArray: [],
+      googleMap: null
     }
   },
   components: { mynav, FontAwesomeIcon },
@@ -283,6 +301,23 @@ export default {
     remove (id) {
     },
     shuffle: function () {
+    },
+    myMap: function () {
+      var myCenter = new google.maps.LatLng(49.9574965, 11.61761869999998)
+      var mapProp = { center: myCenter, zoom: 14, scrollwheel: true, draggable: true, mapTypeId: google.maps.MapTypeId.ROADMAP }
+      var map = new google.maps.Map(document.getElementById('googleMap'), mapProp)
+      var marker = new google.maps.Marker({position: myCenter})
+      marker.setMap(map)
+    },
+    scrollToAnimation: function (hash, speed = 900) {
+      // Using jQuery's animate() method to add smooth page scroll
+      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top
+      }, speed, () => {
+        this.deltaY = 0
+        // window.location.hash = hash
+      }) // Add hash (#) to URL when done scrolling (default click behavior)
     }
   },
   mounted () {
@@ -296,6 +331,61 @@ export default {
         }
       })
     })
+
+    const self = this
+    $(document).ready(function () {
+      // Add smooth scrolling to all links in navbar + footer link
+      $('.navbar a, footer a[href="#company"]').on('click', function (event) {
+        // Make sure this.hash has a value before overriding default behavior
+        if (this.hash !== '') {
+          // Prevent default anchor click behavior
+          event.preventDefault()
+
+          // Store hash
+          var hash = this.hash
+          console.log('hash: ' + hash)
+          self.currentActiveSection = hash
+          self.scrollToAnimation(this.hash)
+        } // End if
+      })
+    })
+
+    // document.addEventListener('wheel', this.$helpers.handleScroll)
+
+    // Listen to the event.
+    EventBus.$off('wheel-event') // um 'multiple' Listener-Anmeldungen zu vermeiden
+    EventBus.$on('wheel-event', e => {
+      if (this.deltaY === -99999) return
+
+      // richtungs-wechsel?
+      if ((this.deltaY > 0 && e.deltaY < 0) || (this.deltaY < 0 && e.deltaY > 0)) {
+        this.deltaY = 0
+      }
+
+      this.deltaY += e.deltaY
+      console.log('scroll-event-delta: ' + this.deltaY)
+      if (Math.abs(this.deltaY) > 500) {
+        // go to next section
+        let newActiveSection = this.navLinkArray[this.navLinkArray.indexOf(this.currentActiveSection) + (this.deltaY > 0 ? 1 : -1)]
+        console.log('newActiveSection: ' + newActiveSection)
+        if (newActiveSection) {
+          this.deltaY = -99999
+          this.currentActiveSection = newActiveSection
+          self.scrollToAnimation(newActiveSection, 1500)
+        }
+      }
+    })
+
+    $('.nav-link').each(function () {
+      // console.log('a href: ' + $(this).attr('href'))
+      self.navLinkArray.push($(this).attr('href'))
+    })
+
+    // $('[data-spy="scroll"]').each(function () {
+    //   $(this).scrollspy('refresh')
+    // })
+
+    this.myMap()
   }
 }
 </script>
@@ -305,6 +395,38 @@ export default {
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
 @import "node_modules/bootstrap/scss/mixins";
+.navbar {
+  margin-bottom: 0;
+  background-color: #f4511e;
+  z-index: 9999;
+  border: 0;
+  font-size: 12px !important;
+  letter-spacing: 4px;
+  border-radius: 0;
+}
+
+.navbar li a, .navbar .navbar-brand {
+  color: #fff !important;
+}
+
+.navbar-brand {
+  padding-left: 10px;
+}
+
+.navbar-nav {
+  line-height: 2 !important;
+}
+
+.navbar-nav li a:hover, .navbar-nav li.active a, .navbar-nav li a.active {
+  color: #f4511e !important;
+  background-color: #fff !important;
+}
+
+.navbar-default .navbar-toggle {
+  border-color: transparent;
+  color: #fff !important;
+}
+
 .jumbotron {
   background-color: #f4511e;
   color: #fff;
@@ -439,6 +561,16 @@ export default {
     -webkit-animation-duration: 1s;
     /* Make the element visible */
     visibility: visible;
+}
+.google-map {
+  height: 400px;
+  width: 100%;
+}
+
+footer .fontawesome {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #f4511e;
 }
 
 /* Go from 0% to 100% opacity (see-through) and specify the percentage from when to slide in the element along the Y-axis */

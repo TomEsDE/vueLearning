@@ -34,8 +34,17 @@ function checkAxiosException (ex, callback, message) {
   }
 }
 
+// scrolling handeln
+const handleScroll = (e) => {
+  e.preventDefault()
+  console.log('handleScroll')
+
+  EventBus.$emit('wheel-event', e)
+}
+
 export default {
   getCustomListRange,
   trimMeBaby,
-  checkAxiosException
+  checkAxiosException,
+  handleScroll
 }

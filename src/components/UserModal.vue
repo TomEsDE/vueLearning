@@ -119,19 +119,6 @@ export default {
 /*
 over-ride "Weak" message, show font in dark grey
 */
-.close {
-  position: absolute;
-  right: 10%;
-  top: 10%;
-}
-.user-id {
-  position: absolute;
-  left: 10%;
-  top: 15%;
-}
-.progress-bar {
-    color: #333;
-}
 
 /*
 Reference:

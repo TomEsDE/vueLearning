@@ -53,18 +53,23 @@
           </transition>
         </div>
 
-        <div class="input-group form-label-group">
+        <div class="input-group form-label-group mb-0">
             <span class="input-group-prepend">
-                <div class="input-group-text bg-white border-right-0 rounded-left">
+                <div class="input-group-text bg-white border-right-0 mb-0 rounded-left">
                   <font-awesome-icon icon="unlock" size="lg" />
                 </div>
             </span>
-          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'form-control border-left-0 rounded-right ' + inputPasswordBorderClass" placeholder="Password" required>
+          <input type="password" v-model="inputPassword" id="inputPassword" v-on:blur="validate('inputPassword', true, true)" :class="'mb-0 form-control border-left-0 rounded-right ' + inputPasswordBorderClass" placeholder="Password" required>
           <label class="inputicon" for="inputPassword">Password</label>
 
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
             <div v-if="liveValidation && inputPasswordErrorText" class='form-error alert alert-danger' v-text="inputPasswordErrorText"></div>
           </transition>
+        </div>
+
+        <!-- <div class="pwstrength_viewport_progress"></div> -->
+        <div class="progress mb-0 mt-0">
+          <div v-text="getPasswordStrengthText()" :class="'m-0 progress-bar ' + getPasswordStrengthClass()" role="progressbar" :aria-valuenow="getPasswordStrengthSize()" aria-valuemin="1" aria-valuemax="5" :style="'width:' + getPasswordStrengthSize() + '%'"></div>
         </div>
 
         <div class="input-group form-label-group">
@@ -73,7 +78,7 @@
                   <font-awesome-icon icon="unlock-alt" size="lg" />
                 </div>
             </span>
-          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control border-left-0 rounded-right ' + inputPasswordConfirmBorderClass" placeholder="Password" required disabled>
+          <input type="password" v-model="inputPasswordConfirm" id="inputPasswordConfirm" v-on:blur="validate('inputPasswordConfirm', true, true)" :class="'form-control border-left-0 rounded-right ' + inputPasswordConfirmBorderClass" placeholder="Password" required :disabled="disabledPwConfirm">
           <label class="inputicon" for="inputPasswordConfirm">Confirm Password</label>
 
           <transition enter-active-class="animated slideInUp" leave-active-class="animated zoomOut">
@@ -95,8 +100,6 @@
           </transition>
         </div>
 
-        <div class="pwstrength_viewport_progress"></div>
-
         <!--
         <button v-on:submit.prevent="onSubmit" type="submit" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
         <button v-on:click="onSubmit" type="button" name="go" class="btn btn-lg btn-primary btn-block">Sign in</button>
@@ -117,7 +120,7 @@ import $ from 'jquery'
 import axios from 'axios'
 import jscookie from 'js-cookie'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import 'zxcvbn/dist/zxcvbn.js'
+import zxcvbn from 'zxcvbn/dist/zxcvbn.js'
 
 var message = 'Login'
 export default {
@@ -178,6 +181,8 @@ export default {
       inputBalanceError: false,
       inputBalanceErrorText: this.defaultErrorText,
       inputBalanceBorderClass: '',
+      disabledPwConfirm: true,
+      passwordScore: -1,
       error: {
         inputId: '',
         errorText: '',
@@ -192,16 +197,61 @@ export default {
 
       let disabled = true
       if (!val || val !== this.inputPasswordConfirm) {
-        disabled = false
-        if (val !== this.inputPasswordConfirm) {
-          this.inputPasswordConfirm = ''
+        if (val.length > 0) {
+          disabled = false
+          if (val !== this.inputPasswordConfirm) {
+            this.inputPasswordConfirm = ''
+          }
         }
       }
+      // console.log('disabled: ' + disabled)
+      this.disabledPwConfirm = disabled
+      // $('#inputPasswordConfirm').prop('disabled', disabled)
 
-      $('#inputPasswordConfirm').prop('disabled', disabled)
+      // check password strength
+      this.passwordScore = zxcvbn(this.inputPassword).score
+      // console.log('passwordScore: ' + this.passwordScore)
     }
   },
   methods: {
+    getPasswordStrengthSize: function () {
+      let size = 0
+      if (this.inputPassword) {
+        size = (this.passwordScore + 1) * 20
+      }
+      return size
+    },
+    getPasswordStrengthClass: function () {
+      // `this` points to the vm instance
+      switch (this.passwordScore) {
+        case 0: return 'bg-danger'
+        case 1: return 'bg-danger'
+        case 2: return 'bg-warning'
+        case 3: return 'bg-info'
+        case 4: return 'bg-success'
+        case 5: return 'bg-success'
+        default: return 'bg-danger'
+      }
+    },
+    getPasswordStrengthText: function () {
+      let text = ''
+
+      if (this.inputPassword) {
+        // `this` points to the vm instance
+        // console.log('this.passwordScore: ' + this.passwordScore)
+        switch (this.passwordScore) {
+          case 0: text = 'Sehr schwach'; break
+          case 1: text = 'Schwach'; break
+          case 2: text = 'Mittel'; break
+          case 3: text = 'Gut'; break
+          case 4: text = 'Stark!'; break
+          case 5: text = 'Sehr stark!'; break
+          default: text = ''
+        }
+      }
+      // console.log('this.passwordScore text: ' + text)
+      return text
+    },
     // a computed getter
     buttonDescription: function () {
       // `this` points to the vm instance
@@ -281,6 +331,7 @@ export default {
         this.inputPassword = this.user.password
         this.inputPasswordConfirm = this.user.password
         this.inputBalance = this.user.account.balance
+        this.disabledPwConfirm = true
 
         this.ignoreWatch = false
 
@@ -400,6 +451,8 @@ export default {
       this.inputPasswordConfirmErrorText = ''
       this.inputBalanceErrorText = ''
 
+      this.passwordScore = -1
+
       this.setBorderClassAll('')
 
       this.user = {
@@ -413,6 +466,8 @@ export default {
         }
       }
       // this.liveValidation = false
+      this.disabledPwConfirm = true
+      // $('#inputPasswordConfirm').prop('disabled', true)
       this.errors.clear()
     },
     setBorderClassAll: function (borderclass) {
@@ -449,5 +504,16 @@ export default {
 .modal-content {
   background-color: unset;
   border: none;
+}
+
+.close {
+  position: absolute;
+  right: 10%;
+  top: 10%;
+}
+.user-id {
+  position: absolute;
+  left: 10%;
+  top: 15%;
 }
 </style>

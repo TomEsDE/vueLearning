@@ -24,9 +24,10 @@
     <% for (var chunk of webpack.chunks) {
         for (var file of chunk.files) {
           if (file.match(/\.(js|css)$/)) { %>
-    <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>   
+    <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4I6LIj1ZoHjzDvEnav6s-GgZ3cryXI5E"></script>
   </head>
-  <body>
+  <body data-spy="scroll" data-target="#navbar-scrollspy" data-offset="60">
     <noscript>
       This is your fallback content in case JavaScript fails to load.
     </noscript>

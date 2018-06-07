@@ -59,6 +59,11 @@ var router = new Router({
       path: '/test',
       name: 'test',
       component: Test
+    },
+    {
+      path: '*',
+      name: 'Hello',
+      component: Hello
     }
   ]
 })
@@ -67,6 +72,7 @@ export default router
 
 router.afterEach((to, from) => {
   console.log('afterEach')
+  EventBus.$emit('remove-doc-wheel-listener', 'just do it')
 
   if (to.path === '/login') {
     // TASK: modalen Login-Dialog anzeigen und bei erfolgreicher Anmeldung dann weiterleiten

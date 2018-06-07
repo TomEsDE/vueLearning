@@ -134,6 +134,9 @@ export default {
       // error['id'] = this.errorCount++
       // this.errors.push(error)
     })
+
+    EventBus.$off('remove-doc-wheel-listener') // um 'multiple' Listener-Anmeldungen zu vermeiden
+    EventBus.$on('remove-doc-wheel-listener', () => (document.removeEventListener('wheel', this.$helpers.handleScroll)))
   }
 }
 
