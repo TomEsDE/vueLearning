@@ -197,14 +197,7 @@ export default {
           this.$refs.paging.setPage(0)
         }
       }).catch(e => {
-        console.log(e)
-        var msg = e.message
-        if (e.response.status === 401) {
-          EventBus.$emit('sending-login-event', 'show modal login dialog')
-          msg = 'Login erforderlich'
-        } else {
-          EventBus.$emit('global-error', { msg: msg, type: 'error', sticky: true })
-        }
+        this.$helpers.checkAxiosException(e, () => this.hide(), 'Laden der User fehlgeschlagen')
       })
     },
     sort: function (col) {
