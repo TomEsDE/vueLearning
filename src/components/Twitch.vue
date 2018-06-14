@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { EventBus } from '../event-bus.js'
+// import { EventBus } from '../event-bus.js'
 import mynav from './mynav.vue'
 import user from './UserModal.vue'
 import paging from './table-pagination.vue'
