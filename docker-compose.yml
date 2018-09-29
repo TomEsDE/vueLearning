@@ -1,0 +1,14 @@
+version: '3'
+services:
+  web:
+    image: myvueapp_img
+    ports:
+      - "8083:8082"
+    # command: bash -c "npm install && npm run dev"
+    # command: bash -c "npm install && npm run dev"
+    working_dir: /app
+    volumes:
+      - "/c/Users/schmi/Documents/Kitematic/myvueapp1/app/src:/app/src"
+    environment:
+      # - "HOST: 0.0.0.0"
+      - "CHOKIDAR_USEPOLLING=true"

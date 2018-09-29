@@ -116,6 +116,7 @@
         </div>
         <div class="col-sm-3">
           <button v-text="buttonNeedleText" class="btn btn-lg btn-danger btn-block buttons" :disabled="trainingStarted" v-on:click="moveNeedle(Math.ceil(Math.random() * 360))" />
+          <button v-text="buttonHideNeedleText" class="btn btn-lg btn-danger btn-block buttons" :disabled="trainingStarted" v-on:click="setAttrSvgObject('needle', 'visibility', 'hidden')" />
           <button v-if="trainingStarted" class="btn btn-lg btn-danger btn-block buttons" v-on:click="stopTraining()">Stop Training</button>
           <button v-else class="btn btn-lg btn-danger btn-block buttons" v-on:click="show()">Settings</button>
           <button v-if="showStats" class="btn btn-lg btn-danger btn-block buttons" v-on:click="showStatistics()">Statistiken</button>
@@ -293,6 +294,7 @@ export default {
       popupTime: 0,
       startCounterFrom: 3,
       buttonNeedleText: 'Kompass ausrichten',
+      buttonHideNeedleText: 'Nadel ausblenden',
       animationStopFlag: 0,
       trainingStopFlag: 0,
       defaultErrorText: 'Bitte geben Sie Daten ein',
@@ -731,6 +733,7 @@ export default {
       }
 
       if (this.trainingStarted) {
+        this.setAttrSvgObject('needle', 'visibility', 'visible')
         let reactionTime = new Date().getTime() - this.popupTime
         let color = 'black'
         let resultText = 'text'
@@ -772,6 +775,11 @@ export default {
           this.addStat(this.directions[this.popupIdx], this.directions[keyEventIdx], resultText, reactionResult, reactionTime) // TODO reactionResult
           this.newPopup = false
         }
+
+        // Nadel ausblenden
+        setTimeout(() => {
+          this.setAttrSvgObject('needle', 'visibility', 'hidden')
+        }, 1500)
       }
     })
   }
